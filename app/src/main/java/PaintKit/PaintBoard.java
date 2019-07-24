@@ -1,0 +1,96 @@
+package PaintKit;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.View;
+
+import java.io.Serializable;
+
+public class PaintBoard implements Serializable{
+
+    private AbstractPen mPen;
+    private AbstractPaper mPaper;
+    private Erasor mErasor;
+
+    public enum Mode{
+        DRAW,
+        ERASOR
+    }
+
+    private Mode mMode = Mode.DRAW;
+
+
+
+
+
+
+    //初始化
+    public PaintBoard(){
+        //画笔默认大小为5，默认颜色为黑色
+        mPen = new Pen();
+        //画纸，默认大小为1000*1000，背景颜色为白色
+        mPaper = new Paper();
+        //橡皮擦默认大小为5
+        mErasor = new Erasor();
+
+    }
+
+
+    public void setPenSize(int size){
+        mPen.setmSize(size);
+    }
+
+    public int getPenSize(){
+        return mPen.getmSize();
+    }
+
+    public void setPenColor(int color){
+        mPen.setmColor(color);
+    }
+
+    public int getPenColor(){
+        return mPen.getmColor();
+    }
+
+    public void setPaperWith(int with){
+        mPaper.setmWidth(with);
+    }
+
+    public void setPaperHeight(int height){
+        mPaper.setmHeight(height);
+    }
+
+    public void setPaperBackgroundColor(int color){
+        mPaper.setmBackgroudColor(color);
+    }
+
+    public int getPaperWith(){
+        return mPaper.getmWidth();
+    }
+
+    public int getPaperHeight(){
+        return mPaper.getmHeight();
+    }
+
+    public int getPaperBackgroundColor(){
+        return mPaper.getmBackgroudColor();
+    }
+
+    public void setErasorSize(int size){
+        mErasor.setmSize(size);
+    }
+
+    public int getErasorSize(){
+        return mErasor.getmSize();
+    }
+
+    public Mode getmMode() {
+        return mMode;
+    }
+
+    public void setmMode(Mode mMode) {
+        this.mMode = mMode;
+    }
+}
