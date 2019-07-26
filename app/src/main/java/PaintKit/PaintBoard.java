@@ -1,12 +1,17 @@
 package PaintKit;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PaintBoard implements Serializable{
 
@@ -21,6 +26,10 @@ public class PaintBoard implements Serializable{
 
     private Mode mMode = Mode.DRAW;
 
+
+
+
+    private List<DrawInfo> mDrawList;
 
 
 
@@ -93,4 +102,11 @@ public class PaintBoard implements Serializable{
     public void setmMode(Mode mMode) {
         this.mMode = mMode;
     }
+
+    public List<DrawInfo> getmDrawList() {
+        return mDrawList;
+    }
+
+
+
 }

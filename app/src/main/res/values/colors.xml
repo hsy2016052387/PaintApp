@@ -5,4 +5,12 @@
     <color name="colorAccent">#D81B60</color>
 
     <drawable name="toolbar_bg">#30000000</drawable>
+
+    <color name="penColorBlack">#000000</color>
+    <color name="penColorRed">#FF4949</color>
+    <color name="penColorOrange">#FF9800</color>
+    <color name="penColorYellow">#FFFF41</color>
+    <color name="penColorGreen">#17D517</color>
+    <color name="penColorBlue">#3B3BFF</color>
+    <color name="penColorPurpos">#9027EC</color>
 </resources>

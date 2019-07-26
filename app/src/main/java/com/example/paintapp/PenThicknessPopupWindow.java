@@ -13,12 +13,18 @@ public class PenThicknessPopupWindow {
     private PopupWindow mPopupWindow;
     private View mView;
     private SeekBarCallBack mSeekBarCallBack;
-    public PenThicknessPopupWindow(Context context){
+    public PenThicknessPopupWindow(Context context,int seekBarDefaultProcess){
+        //关联mView布局
         mView = LayoutInflater.from(context).inflate(R.layout.pen_thickness_popwindow,null);
-        mPopupWindow = new PopupWindow(mView,1000,100,true);
+        //创建popupwindow，宽为屏幕宽度，高100
+        mPopupWindow = new PopupWindow(mView,new ScreenUtil(context).getScreenSize(ScreenUtil.WIDTH),100,true);
         //设置popwindow的背景颜色
-        //mPopupWindow.setBackgroundDrawable(new ColorDrawable(0x000000));
+        mPopupWindow.setBackgroundDrawable(new ColorDrawable(0xaa008577));
+
         mSeekBar = (SeekBar)mView.findViewById(R.id.seekBar);
+        //设置seekbar默认值
+        mSeekBar.setProgress(seekBarDefaultProcess);
+        //设置seekbar progress改变监听事件
         mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progess, boolean b) {

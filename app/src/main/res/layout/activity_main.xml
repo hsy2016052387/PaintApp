@@ -8,26 +8,28 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/image"
+    <com.example.paintapp.PaintBoardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="10"
-        android:background="#ffffff" />
+        android:layout_weight="14"
+        android:id="@+id/paint_board_view"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:layout_weight="1"
         android:orientation="vertical">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="5dp"
+                android:id="@+id/pen_color"/>
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -53,6 +55,25 @@
                 android:scaleType="centerInside"
                 android:src="@drawable/erasor"
                 android:background="@drawable/toolbar_item_background"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/undo"
+                android:scaleType="centerInside"
+                android:src="@drawable/undo"
+                android:background="@drawable/toolbar_item_background"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/clear"
+                android:scaleType="centerInside"
+                android:src="@drawable/clear"
+                android:background="@drawable/toolbar_item_background"/>
+
         </LinearLayout>
     </LinearLayout>
 
