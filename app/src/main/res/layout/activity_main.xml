@@ -60,6 +60,15 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:id="@+id/geometry"
+                android:scaleType="centerInside"
+                android:src="@drawable/geometry"
+                android:background="@drawable/toolbar_item_background"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:id="@+id/undo"
                 android:scaleType="centerInside"
                 android:src="@drawable/undo"
@@ -69,9 +78,27 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:id="@+id/redo"
+                android:scaleType="centerInside"
+                android:src="@drawable/redo"
+                android:background="@drawable/toolbar_item_background"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:id="@+id/clear"
                 android:scaleType="centerInside"
                 android:src="@drawable/clear"
+                android:background="@drawable/toolbar_item_background"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/add"
+                android:scaleType="centerInside"
+                android:src="@drawable/add"
                 android:background="@drawable/toolbar_item_background"/>
 
         </LinearLayout>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+
+    <ImageButton
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:scaleType="centerInside"
+        android:id="@+id/add_page"
+        android:src="@drawable/add_page"
+        android:background="@drawable/popupwindow_item_backgroud"/>
+    <ImageButton
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:scaleType="centerInside"
+        android:id="@+id/preview_page"
+        android:src="@drawable/preview"
+        android:background="@drawable/popupwindow_item_backgroud"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        android:id="@+id/this_page"
+        android:textColor="@android:color/white"
+        android:text="1/1"
+        android:gravity="center"/>
+    <ImageButton
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:scaleType="centerInside"
+        android:id="@+id/next_page"
+        android:src="@drawable/next"
+        android:background="@drawable/popupwindow_item_backgroud"/>
+</LinearLayout>

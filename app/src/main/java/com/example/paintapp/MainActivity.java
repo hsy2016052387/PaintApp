@@ -21,14 +21,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private PenThicknessPopupWindow mPenThicknessPopupWindow;
     private PenColorPopupWindow mPenColorPopupWindow;
+    private SwitchPagePopupWindow mSwitchPagePopupWindow;
+    private GeometrySelectPopupWindow mGeometrySelectPopupWindow;
 
     private PaintBoardView mPaintBoardView;
     private View mPenColorView;
     private View mPenView;
     private View mLineView;
     private View mErasorView;
+    private View mGeometryView;
     private View mUndoView;
+    private View mRedoView;
     private View mClearView;
+    private View mAddView;
 
 
 
@@ -44,21 +49,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mPenView = (ImageView)findViewById(R.id.pen);
         mLineView = (ImageView)findViewById(R.id.lineThickness);
         mErasorView = (ImageView)findViewById(R.id.erasor);
+        mGeometryView = (ImageView)findViewById(R.id.geometry);
         mUndoView = (ImageView)findViewById(R.id.undo);
+        mRedoView = (ImageView)findViewById(R.id.redo);
         mClearView = (ImageView)findViewById(R.id.clear);
-
+        mAddView = (ImageView)findViewById(R.id.add);
 
 
         mPenThicknessPopupWindow = new PenThicknessPopupWindow(MainActivity.this,mPaintBoardView.getPenSize());
         mPenColorPopupWindow = new PenColorPopupWindow(MainActivity.this);
-
+        mSwitchPagePopupWindow = new SwitchPagePopupWindow(MainActivity.this,mPaintBoardView);
+        mGeometrySelectPopupWindow = new GeometrySelectPopupWindow(MainActivity.this);
 
         mPenColorView.setOnClickListener(this);
         mPenView.setOnClickListener(this);
         mLineView.setOnClickListener(this);
         mErasorView.setOnClickListener(this);
+        mGeometryView.setOnClickListener(this);
         mUndoView.setOnClickListener(this);
+        mRedoView.setOnClickListener(this);
         mClearView.setOnClickListener(this);
+        mAddView.setOnClickListener(this);
 
         mPenColorPopupWindow.setmChooseColorCallback(new PenColorPopupWindow.ChooseColorCallback() {
             @Override
@@ -77,8 +88,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mPaintBoardView.setmStatusChangeCallBack(new PaintBoardView.StatusChangeCallBack() {
             @Override
-            public void undoStatusChanged() {
+            public void undoRedoStatusChanged() {
                 mUndoView.setEnabled(mPaintBoardView.canUndo());
+                mRedoView.setEnabled(mPaintBoardView.canRedo());
             }
         });
 
@@ -87,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mPenView.setSelected(true);
         mUndoView.setEnabled(false);
+        mRedoView.setEnabled(false);
 
 
 
@@ -99,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.pen_color:
                 mPenColorPopupWindow.showPopupWindow(mPenColorView);
                 break;
+
             case R.id.pen:
                 if(!mPenView.isSelected()){
                     mPenView.setSelected(true);
@@ -106,9 +120,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mPaintBoardView.setmMode(PaintBoard.Mode.DRAW);
                 }
                 break;
+
             case R.id.lineThickness:
                 mPenThicknessPopupWindow.showPopupWindow(mLineView);
                 break;
+
             case R.id.erasor:
                 if(!mErasorView.isSelected()){
                     mErasorView.setSelected(true);
@@ -116,11 +132,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mPaintBoardView.setmMode(PaintBoard.Mode.ERASOR);
                 }
                 break;
+
+            case R.id.geometry:
+                mGeometrySelectPopupWindow.showPopupWindow(mGeometryView);
+                break;
+
             case R.id.undo:
                 mPaintBoardView.undo();
                 break;
+
+            case R.id.redo:
+                mPaintBoardView.redo();
+                break;
+
             case R.id.clear:
                 mPaintBoardView.clear();
+                break;
+
+            case R.id.add:
+                mSwitchPagePopupWindow.showPopupWindow(mAddView);
                 break;
         }
     }

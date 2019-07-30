@@ -30,6 +30,7 @@ public class PaintBoard implements Serializable{
 
 
     private List<DrawInfo> mDrawList;
+    private List<DrawInfo> mRemoveList;
 
 
 
@@ -43,6 +44,9 @@ public class PaintBoard implements Serializable{
         mPaper = new Paper();
         //橡皮擦默认大小为5
         mErasor = new Erasor();
+
+        mDrawList = new ArrayList<>();
+        mRemoveList = new ArrayList<>();
 
     }
 
@@ -107,6 +111,8 @@ public class PaintBoard implements Serializable{
         return mDrawList;
     }
 
-
+    public List<DrawInfo> getmRemoveList(){
+        return mRemoveList;
+    }
 
 }

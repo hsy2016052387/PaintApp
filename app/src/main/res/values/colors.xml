@@ -5,9 +5,10 @@
     <color name="colorAccent">#D81B60</color>
 
     <drawable name="toolbar_bg">#30000000</drawable>
+    <drawable name="popupwindow_bg">#00574B</drawable>
 
     <color name="penColorBlack">#000000</color>
-    <color name="penColorRed">#FF4949</color>
+    <color name="penColorRed">#ff4949</color>
     <color name="penColorOrange">#FF9800</color>
     <color name="penColorYellow">#FFFF41</color>
     <color name="penColorGreen">#17D517</color>
