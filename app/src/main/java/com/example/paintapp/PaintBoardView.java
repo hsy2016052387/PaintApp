@@ -6,8 +6,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.graphics.Xfermode;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -17,17 +19,19 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import GeometryGraphics.AbstractGraphics;
 import PaintKit.DrawInfo;
 import PaintKit.PaintBoard;
 
 public class PaintBoardView extends View {
+    private PointF mStartPoint,mEndPoint;
     private Paint mPaint;
     private Path mPath;
     private Bitmap mBitmap;
     private Canvas mCanvas;
 
-    private float mLastX;
-    private float mLastY;
+//    private float mLastX;
+//    private float mLastY;
 
     private int mPaintBoardIndex;
     private int mSumPaintBoards;
@@ -38,6 +42,7 @@ public class PaintBoardView extends View {
 
     private PaintBoard mPaintBoard;
 
+    private boolean mDrawing;
     private boolean mCanEraser;
     private List<DrawInfo> mDrawInfoList;
     private List<DrawInfo> mRemoveInfoList;
@@ -46,10 +51,11 @@ public class PaintBoardView extends View {
     private PaintBoard.Mode mMode;
 
     private StatusChangeCallBack mStatusChangeCallBack;
-
-
-
     private PreNextPageStatusChangeCallBack mPreNextPageStatusChangeCallBack;
+
+
+
+    private AbstractGraphics mAbstractGraphics;
 
     public PaintBoardView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -73,6 +79,9 @@ public class PaintBoardView extends View {
         mDrawInfoList = mPaintBoard.getmDrawList();
         mRemoveInfoList = mPaintBoard.getmRemoveList();
 
+        mStartPoint = new PointF();
+        mEndPoint = new PointF();
+
         //创建画笔，设置抗锯齿标志、使位图进行有利的抖动的位掩码标志
         mPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG);
         //描边
@@ -88,10 +97,11 @@ public class PaintBoardView extends View {
         //画笔颜色
         mPaint.setColor(mPaintBoard.getPenColor());
 
-        mXferModeDraw = new PorterDuffXfermode(PorterDuff.Mode.SRC);
+        mXferModeDraw = null;
         mXferModeClear = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
 
-        mPaint.setXfermode(mXferModeDraw);
+        //mPaint.setXfermode(mXferModeDraw);
+        //mPaint.setXfermode(null);
     }
 
     private void initBitmap(){
@@ -106,13 +116,12 @@ public class PaintBoardView extends View {
     public void setmMode(PaintBoard.Mode mode) {
         if (mode != mMode) {
             mMode = mode;
-            if (mMode == PaintBoard.Mode.DRAW) {
-                mPaint.setXfermode(mXferModeDraw);
-                mPaintBoard.setmMode(PaintBoard.Mode.DRAW);
-
-            } else {
+            mPaintBoard.setmMode(mMode);
+            if (mMode == PaintBoard.Mode.ERASOR) {
                 mPaint.setXfermode(mXferModeClear);
-                mPaintBoard.setmMode(PaintBoard.Mode.ERASOR);
+
+            } else{
+                mPaint.setXfermode(mXferModeDraw);
             }
         }
     }
@@ -129,6 +138,11 @@ public class PaintBoardView extends View {
         mPaint.setColor(color);
         mPaintBoard.setPenColor(color);
     }
+
+    public void setmAbstractGraphics(AbstractGraphics mAbstractGraphics) {
+        this.mAbstractGraphics = mAbstractGraphics;
+    }
+
     //------------------------------------设置接口-----------------------------------
     public void setmStatusChangeCallBack(StatusChangeCallBack mStatusChangeCallBack) {
         this.mStatusChangeCallBack = mStatusChangeCallBack;
@@ -322,41 +336,60 @@ public class PaintBoardView extends View {
         if (mBitmap != null) {
             canvas.drawBitmap(mBitmap, 0, 0, null);
         }
+        if(mMode == PaintBoard.Mode.Geometry && mDrawing && mAbstractGraphics!=null)
+            mAbstractGraphics.draw(canvas,mStartPoint,mEndPoint,mPaint);
     }
 
     @Override
-        public boolean onTouchEvent(MotionEvent event){
+    public boolean onTouchEvent(MotionEvent event){
         final int action = event.getAction() & MotionEvent.ACTION_MASK;
-        final float x = event.getX();
-        final float y = event.getY();
 
         switch (action){
             case MotionEvent.ACTION_DOWN:
-                mLastX = x;
-                mLastY = y;
+                //开始书写笔迹
+                mDrawing = true;
+                mStartPoint.x = event.getX();
+                mStartPoint.y = event.getY();
                 if (mPath == null) {
                     mPath = new Path();
                 }
-                mPath.moveTo(x,y);
+                mPath.moveTo(mStartPoint.x,mStartPoint.y);
                 break;
+
             case MotionEvent.ACTION_MOVE:
-                //这里终点设为两点的中心点的目的在于使绘制的曲线更平滑，如果终点直接设置为x,y，效果和lineto是一样的,实际是折线效果
-                mPath.quadTo(mLastX, mLastY, (x + mLastX) / 2, (y + mLastY) / 2);
+                mEndPoint.x = event.getX();
+                mEndPoint.y = event.getY();
+
+                //mPath.reset();
+                //mPath.addRect(left,top,right,bottom,Path.Direction.CW);
                 if (mBitmap == null) {
                     initBitmap();
                 }
                 if (mMode == PaintBoard.Mode.ERASOR && !mCanEraser) {
                     break;
                 }
-                mCanvas.drawPath(mPath,mPaint);
+                if(mMode!=PaintBoard.Mode.Geometry){
+                    //这里终点设为两点的中心点的目的在于使绘制的曲线更平滑，如果终点直接设置为x,y，效果和lineto是一样的,实际是折线效果
+                    mPath.quadTo(mStartPoint.x, mStartPoint.y, (mEndPoint.x + mStartPoint.x) / 2, (mEndPoint.y + mStartPoint.y) / 2);
+                    mCanvas.drawPath(mPath,mPaint);
+                    mStartPoint.x = event.getX();
+                    mStartPoint.y = event.getY();
+                }
+
                 invalidate();
-                mLastX = x;
-                mLastY = y;
                 break;
+
             case MotionEvent.ACTION_UP:
-                if (mMode == PaintBoard.Mode.DRAW || mCanEraser) {
+                if(mMode == PaintBoard.Mode.Geometry && mAbstractGraphics!=null){
+                    mAbstractGraphics.saveToPath(mPath,mStartPoint,mEndPoint);
+                    mCanvas.drawPath(mPath,mPaint);
+                }
+                if (mMode ==  PaintBoard.Mode.DRAW || mMode ==PaintBoard.Mode.Geometry || mCanEraser) {
                     saveDrawingPath();
                 }
+
+                //结束书写
+                mDrawing = false;
                 mPath.reset();
                 break;
         }

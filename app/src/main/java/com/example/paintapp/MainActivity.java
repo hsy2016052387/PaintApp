@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mPenThicknessPopupWindow = new PenThicknessPopupWindow(MainActivity.this,mPaintBoardView.getPenSize());
         mPenColorPopupWindow = new PenColorPopupWindow(MainActivity.this);
         mSwitchPagePopupWindow = new SwitchPagePopupWindow(MainActivity.this,mPaintBoardView);
-        mGeometrySelectPopupWindow = new GeometrySelectPopupWindow(MainActivity.this);
+        mGeometrySelectPopupWindow = new GeometrySelectPopupWindow(MainActivity.this,mPaintBoardView);
 
         mPenColorView.setOnClickListener(this);
         mPenView.setOnClickListener(this);
@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.pen:
                 if(!mPenView.isSelected()){
                     mPenView.setSelected(true);
+                    mGeometryView.setSelected(false);
                     mErasorView.setSelected(false);
                     mPaintBoardView.setmMode(PaintBoard.Mode.DRAW);
                 }
@@ -128,12 +129,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.erasor:
                 if(!mErasorView.isSelected()){
                     mErasorView.setSelected(true);
+                    mGeometryView.setSelected(false);
                     mPenView.setSelected(false);
                     mPaintBoardView.setmMode(PaintBoard.Mode.ERASOR);
                 }
                 break;
 
             case R.id.geometry:
+                if(!mGeometryView.isSelected()){
+                    mGeometryView.setSelected(true);
+                    mErasorView.setSelected(false);
+                    mPenView.setSelected(false);
+                    mPaintBoardView.setmMode(PaintBoard.Mode.Geometry);
+                }
                 mGeometrySelectPopupWindow.showPopupWindow(mGeometryView);
                 break;
 

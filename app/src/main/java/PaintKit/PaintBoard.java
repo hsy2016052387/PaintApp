@@ -21,7 +21,8 @@ public class PaintBoard implements Serializable{
 
     public enum Mode{
         DRAW,
-        ERASOR
+        ERASOR,
+        Geometry
     }
 
     private Mode mMode = Mode.DRAW;
