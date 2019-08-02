@@ -8,12 +8,16 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import FileIO.XMLManager;
 import PaintKit.PaintBoard;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private View mClearView;
     private View mAddView;
 
+    private XMLManager mXMLManager;
 
 
     @SuppressLint("ResourceAsColor")
@@ -118,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mPenView.setSelected(true);
                     mGeometryView.setSelected(false);
                     mErasorView.setSelected(false);
-                    mPaintBoardView.setmMode(PaintBoard.Mode.DRAW);
+                    mPaintBoardView.setmMode(PaintBoardView.Mode.DRAW);
                 }
                 break;
 
@@ -131,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mErasorView.setSelected(true);
                     mGeometryView.setSelected(false);
                     mPenView.setSelected(false);
-                    mPaintBoardView.setmMode(PaintBoard.Mode.ERASOR);
+                    mPaintBoardView.setmMode(PaintBoardView.Mode.ERASOR);
                 }
                 break;
 
@@ -140,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     mGeometryView.setSelected(true);
                     mErasorView.setSelected(false);
                     mPenView.setSelected(false);
-                    mPaintBoardView.setmMode(PaintBoard.Mode.Geometry);
+                    mPaintBoardView.setmMode(PaintBoardView.Mode.Geometry);
                 }
                 mGeometrySelectPopupWindow.showPopupWindow(mGeometryView);
                 break;
@@ -161,5 +166,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mSwitchPagePopupWindow.showPopupWindow(mAddView);
                 break;
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.option_menu_item,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.saveAsXML:
+                Log.i("==>","点击保存为XML");
+                if(mXMLManager==null)
+                    mXMLManager = new XMLManager(MainActivity.this);
+                mXMLManager.savaToXMl(mPaintBoardView.getmPaintBoardList());
+                break;
+
+            case R.id.openXML:
+                break;
+
+            case R.id.saveAsPhoto:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

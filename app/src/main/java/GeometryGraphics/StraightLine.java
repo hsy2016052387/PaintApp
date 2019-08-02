@@ -6,8 +6,12 @@ import android.graphics.Path;
 import android.graphics.PointF;
 
 public class StraightLine extends AbstractGraphics {
+    public StraightLine(){
+        super();
+        super.setType("StraightLine");
+    }
     @Override
-    public void draw(Canvas canvas, PointF p1, PointF p2, Paint paint) {
+    public void drawToCanvas(Canvas canvas, PointF p1, PointF p2, Paint paint) {
         canvas.drawLine(p1.x,p1.y,p2.x,p2.y,paint);
     }
 

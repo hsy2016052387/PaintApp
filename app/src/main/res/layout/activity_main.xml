@@ -39,6 +39,7 @@
                 android:src="@drawable/pen"
                 android:background="@drawable/toolbar_item_background"
                 />
+
             <ImageView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

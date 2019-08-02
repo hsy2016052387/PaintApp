@@ -8,6 +8,7 @@ package com.example.paintapp;
         import android.widget.PopupWindow;
 
         import GeometryGraphics.AbstractGraphicsFactory;
+        import GeometryGraphics.CircleFactory;
         import GeometryGraphics.RetangleFactory;
         import GeometryGraphics.StraightLineFactory;
 
@@ -80,6 +81,16 @@ public class GeometrySelectPopupWindow implements View.OnClickListener {
                 break;
 
             case R.id.geometry_circle:
+                if(!circle.isSelected()){
+                    //选中该按钮
+                    circle.setSelected(true);
+                    straightLine.setSelected(false);
+                    retangle.setSelected(false);
+                    //创建圆形工厂
+                    mAbstractGraphicsFactory = new CircleFactory();
+                    //利用矩形工厂创建矩形对象并赋值到mPaintBoardView的抽象图形中
+                    mPaintBoardView.setmAbstractGraphics(mAbstractGraphicsFactory.createConcreGraph());
+                }
                 break;
         }
     }

@@ -19,13 +19,9 @@ public class PaintBoard implements Serializable{
     private AbstractPaper mPaper;
     private Erasor mErasor;
 
-    public enum Mode{
-        DRAW,
-        ERASOR,
-        Geometry
-    }
 
-    private Mode mMode = Mode.DRAW;
+
+    //private Mode mMode = Mode.DRAW;
 
 
 
@@ -98,14 +94,6 @@ public class PaintBoard implements Serializable{
 
     public int getErasorSize(){
         return mErasor.getmSize();
-    }
-
-    public Mode getmMode() {
-        return mMode;
-    }
-
-    public void setmMode(Mode mMode) {
-        this.mMode = mMode;
     }
 
     public List<DrawInfo> getmDrawList() {
