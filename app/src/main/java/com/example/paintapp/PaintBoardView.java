@@ -161,7 +161,7 @@ public class PaintBoardView extends View {
         this.mAbstractGraphics = mAbstractGraphics;
     }
 
-    //------------------------------------设置接口-----------------------------------
+    // ------------------------------------设置接口-----------------------------------
     public void setmStatusChangeCallBack(StatusChangeCallBack mStatusChangeCallBack) {
         this.mStatusChangeCallBack = mStatusChangeCallBack;
     }
@@ -170,7 +170,7 @@ public class PaintBoardView extends View {
         this.mPreNextPageStatusChangeCallBack = mPreNextPageStatusChangeCallBack;
     }
 
-    //------------------------------------设置接口-----------------------------------
+    // ------------------------------------设置接口-----------------------------------
 
     public int getmPaintBoardIndex() {
         return mPaintBoardIndex;

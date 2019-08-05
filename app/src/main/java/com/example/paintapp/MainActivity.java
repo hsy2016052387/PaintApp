@@ -1,10 +1,14 @@
 package com.example.paintapp;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,10 +19,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
-import FileIO.XMLManager;
-import PaintKit.PaintBoard;
+import FileIO.FilePicker;
+import FileIO.XmlManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -39,8 +41,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private View mClearView;
     private View mAddView;
 
-    private XMLManager mXMLManager;
+    private XmlManager mXMLManager;
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final int REQUEST_CHOOSEFILE = 2;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE };
 
     @SuppressLint("ResourceAsColor")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -48,6 +55,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        int permission = ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED){
+            Log.i("==>","没有权限");
+            // 申请权限
+            ActivityCompat.requestPermissions(MainActivity.this,PERMISSIONS_STORAGE,REQUEST_EXTERNAL_STORAGE);
+        }
 
         mPaintBoardView = (PaintBoardView)findViewById(R.id.paint_board_view);
         mPenColorView = (TextView)findViewById(R.id.pen_color);
@@ -180,11 +194,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.saveAsXML:
                 Log.i("==>","点击保存为XML");
                 if(mXMLManager==null)
-                    mXMLManager = new XMLManager(MainActivity.this);
+                    mXMLManager = new XmlManager(MainActivity.this);
                 mXMLManager.savaToXMl(mPaintBoardView.getmPaintBoardList());
                 break;
 
             case R.id.openXML:
+                //选择文件【调用系统的文件管理】
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                //intent.setType(“image/*”);//选择图片
+                //intent.setType(“audio/*”); //选择音频
+                //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
+                //intent.setType(“video/*;image/*”);//同时选择视频和图片
+                intent.setType("*/*");//无类型限制
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(intent, REQUEST_CHOOSEFILE);
                 break;
 
             case R.id.saveAsPhoto:
@@ -192,4 +215,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode,int resultCode,Intent data){//选择文件返回
+        super.onActivityResult(requestCode,resultCode,data);
+        if(resultCode==RESULT_OK){
+            switch(requestCode){
+                  case REQUEST_CHOOSEFILE:
+                  Uri uri=data.getData();
+                  String chooseFilePath= FilePicker.getInstance(this).getChooseFileResultPath(uri);
+                  Log.i("==>","选择文件返回："+chooseFilePath);
+                  //sendFileMessage(chooseFilePath);
+                   break;
+            }
+        }
+    }
+
 }

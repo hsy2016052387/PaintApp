@@ -25,9 +25,22 @@ public class DrawInfo {
     private List<Point> mPointList;
     private String type;
 
+    public DrawInfo(){}
     public DrawInfo(AbstractPen pen,String type){
         mPen = pen;
         mPointList = new ArrayList<>();
+        this.type = type;
+    }
+
+    public void setmPen(AbstractPen mPen) {
+        this.mPen = mPen;
+    }
+
+    public void setmPointList(List<Point> mPointList) {
+        this.mPointList = mPointList;
+    }
+
+    public void setType(String type) {
         this.type = type;
     }
 
