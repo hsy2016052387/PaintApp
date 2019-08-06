@@ -17,9 +17,11 @@ public class PenThicknessPopupWindow {
         //关联mView布局
         mView = LayoutInflater.from(context).inflate(R.layout.pen_thickness_popwindow,null);
         //创建popupwindow，宽为屏幕宽度，高100
-        mPopupWindow = new PopupWindow(mView,new ScreenUtil(context).getScreenSize(ScreenUtil.WIDTH),100,true);
+        mPopupWindow = new PopupWindow(mView,new ScreenUtil(context).getScreenSize(ScreenUtil.WIDTH),100);
         //设置popwindow的背景颜色
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(0xaa008577));
+        // 设置相应外部事件
+        mPopupWindow.setOutsideTouchable(true);
 
         mSeekBar = (SeekBar)mView.findViewById(R.id.seekBar);
         //设置seekbar默认值

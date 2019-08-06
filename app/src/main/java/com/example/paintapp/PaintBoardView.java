@@ -34,6 +34,9 @@ public class PaintBoardView extends View {
     private PointF mStartPoint,mEndPoint;
     private Paint mPaint,mOldPaint;
     private Path mPath;
+
+
+
     private Bitmap mBitmap;
     private Canvas mCanvas;
 
@@ -53,6 +56,9 @@ public class PaintBoardView extends View {
 
     private boolean mDrawing;
     private boolean mCanEraser;
+
+
+
     private List<DrawInfo> mDrawInfoList;
     private List<DrawInfo> mRemoveInfoList;
 
@@ -148,6 +154,16 @@ public class PaintBoardView extends View {
         mPaintBoard.setPenSize(size);
     }
 
+    public List<DrawInfo> getmDrawInfoList() {
+        return mDrawInfoList;
+    }
+
+    public Bitmap getmBitmap() {
+        if (mBitmap == null)
+            initBitmap();
+        return mBitmap;
+    }
+
     public int getPenSize(){
         return mPaintBoard.getPenSize();
     }
@@ -233,6 +249,7 @@ public class PaintBoardView extends View {
     private void rebuildPath(DrawInfo drawInfo){
         float startX = drawInfo.getmPointList().get(0).x;
         float startY = drawInfo.getmPointList().get(0).y;
+
         mPath.moveTo(startX,startY);
         switch (drawInfo.getType()){
             case "Draw":
@@ -451,6 +468,46 @@ public class PaintBoardView extends View {
             mPaint.setColor(mOldPaint.getColor());
             mPaint.setXfermode(mOldPaint.getXfermode());
         }
+    }
+
+    /**
+     * 切换View控制的List，用于反序列化
+     * @param paintBoardList 接收反序列化xml文件得到的paintBoardList
+     */
+    public void switchPaintBoardList(List<PaintBoard> paintBoardList) {
+        if (paintBoardList.size() < 1) {
+            return;
+        }
+
+        mPaintBoardList = paintBoardList;
+        mPaintBoardIndex = 0;
+        mSumPaintBoards = paintBoardList.size();
+
+        // 初始化显示画布所需的工具
+        if (mPath == null)
+            mPath = new Path();
+        if (mBitmap == null) {
+            initBitmap();
+        }
+
+        setCurrentPaintBoard(mPaintBoardList.get(mPaintBoardIndex));
+        //更新撤销反撤销按钮的状态（是否可点击）
+        if(mStatusChangeCallBack!=null)
+            mStatusChangeCallBack.undoRedoStatusChanged();
+        //更新前一页和下一页的按钮状态
+        if(mPreNextPageStatusChangeCallBack!=null)
+            mPreNextPageStatusChangeCallBack.preNextPageStatusChanged();
+        //设置是否可擦除
+        mCanEraser = canUndo();
+        //保存画笔信息
+        mOldPaint.setStrokeWidth(mPaint.getStrokeWidth());
+        mOldPaint.setColor(mPaint.getColor());
+        mOldPaint.setXfermode(mPaint.getXfermode());
+        reDraw();
+        //恢复画笔信息
+        mPaint.setStrokeWidth(mOldPaint.getStrokeWidth());
+        mPaint.setColor(mOldPaint.getColor());
+        mPaint.setXfermode(mOldPaint.getXfermode());
     }
 
 

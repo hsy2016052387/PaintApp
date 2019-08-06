@@ -27,9 +27,11 @@ public class SwitchPagePopupWindow implements View.OnClickListener {
         //关联mView布局
         mView = LayoutInflater.from(context).inflate(R.layout.addpage_popupwindow,null);
         ////创建popupwindow，宽为屏幕宽度，高100
-        mPopupWindow = new PopupWindow(mView,500,100,true);
+        mPopupWindow = new PopupWindow(mView,500,100);
         //设置popwindow的背景颜色
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(0xaa008577));
+        // 设置相应外部事件
+        mPopupWindow.setOutsideTouchable(true);
 
         mAddPage = (ImageButton)mView.findViewById(R.id.add_page);
         mPreviewPage = (ImageButton)mView.findViewById(R.id.preview_page);
@@ -48,6 +50,7 @@ public class SwitchPagePopupWindow implements View.OnClickListener {
             public void preNextPageStatusChanged() {
                 mPreviewPage.setEnabled(mPaintBoardView.canPrePage());
                 mNextPage.setEnabled(mPaintBoardView.canNext());
+                mTextView.setText(mPaintBoardView.getmPaintBoardIndex()+1 +"/"+mPaintBoardView.getmSumPaintBoards());
             }
         });
     }
@@ -61,18 +64,14 @@ public class SwitchPagePopupWindow implements View.OnClickListener {
         switch (view.getId()){
             case R.id.add_page:
                 mPaintBoardView.addNewPaintBoard();
-                //Toast.makeText(mcontext,mPaintBoardView.getmSumPaintBoards(),Toast.LENGTH_SHORT).show();
-                mTextView.setText(mPaintBoardView.getmPaintBoardIndex()+1 +"/"+mPaintBoardView.getmSumPaintBoards());
                 break;
 
             case R.id.preview_page:
                 mPaintBoardView.prePage();
-                mTextView.setText(mPaintBoardView.getmPaintBoardIndex()+1 + "/" + mPaintBoardView.getmSumPaintBoards());
                 break;
 
             case R.id.next_page:
                 mPaintBoardView.nextPage();
-                mTextView.setText(mPaintBoardView.getmPaintBoardIndex()+1 + "/" + mPaintBoardView.getmSumPaintBoards());
                 break;
         }
     }

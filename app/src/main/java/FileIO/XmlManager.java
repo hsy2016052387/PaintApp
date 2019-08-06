@@ -62,20 +62,26 @@ public class XmlManager {
      *         .
      *     </PaintBoards>
      * @param mPaintBoardList 把接收到的list对象序列化
+     * @param fileName 要保存的文件名称
      */
-    public void savaToXMl(List<PaintBoard> mPaintBoardList){
+    public void savaToXMl(List<PaintBoard> mPaintBoardList,String fileName){
+        if (fileName == null || fileName.length() == 0) {
+            Toast.makeText(context,"文件名不能为空",Toast.LENGTH_SHORT).show();
+            return;
+        }
         Log.i("==>","开始序列化");
         //创建负责序列化的对象
         XmlSerializer serializer =  Xml.newSerializer();
         File path = new File(Environment.getExternalStorageDirectory().getPath());
-        File file = new File(path + "/" + "test.xml");
+        File file = new File(path + "/" + fileName + ".xml");
         FileOutputStream os;
         try {
             // 判断sd卡是否存在
             if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
-                // 检查文件是否存在，存在则删除再创建
+                // 检查文件是否存在，存在则停止
                 if (file.exists()){
-                    file.delete();
+                    Toast.makeText(context,"文件已存在，请重新命名",Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 file.createNewFile();
                 os = new FileOutputStream(file);
@@ -165,10 +171,16 @@ public class XmlManager {
 
     }
 
+    /**
+     * 反序列化
+     * @param path xml文件的路径
+     * @return 返回反序列化后生成的List<PaintBoard>
+     */
     public List<PaintBoard> pullXmlToPaintBoardList(String path){
         Log.i("MainActivity", " 开始反序列化");
         XmlPullParser xmlPullParser = Xml.newPullParser();
         List<PaintBoard> paintBoardList = new ArrayList<>();
+        List<Point> pointList = null;
         PaintBoard paintBoard = null;
         DrawInfo drawInfo = null;
         AbstractPen pen = null;
@@ -189,29 +201,41 @@ public class XmlManager {
                         }else if ("Pen".equals(xmlPullParser.getName())) {
                             pen = new Pen();
                         }else if ("Size".equals(xmlPullParser.getName())) {
-                            pen.setmSize(Integer.parseInt(xmlPullParser.getText()));
+                            pen.setmSize(Integer.parseInt(xmlPullParser.nextText()));
                         }else if ("Color".equals(xmlPullParser.getName())) {
-                            pen.setmColor(Integer.parseInt(xmlPullParser.getText()));
+                            pen.setmColor(Integer.parseInt(xmlPullParser.nextText()));
                             drawInfo.setmPen(pen);
                         }else if ("Type".equals(xmlPullParser.getName())) {
-                            drawInfo.setType(xmlPullParser.getText());
+                            drawInfo.setType(xmlPullParser.nextText());
+                        }else if ("Points".equals(xmlPullParser.getName())) {
+                            pointList = new ArrayList<>();
+                            drawInfo.setmPointList(pointList);
                         }else if ("Point".equals(xmlPullParser.getName())) {
                             point = new Point();
                         }else if ("X".equals(xmlPullParser.getName())) {
-                            point.x = Float.parseFloat(xmlPullParser.getText());
+                            point.x = Float.parseFloat(xmlPullParser.nextText());
                         }else if ("Y".equals(xmlPullParser.getName())) {
-                            point.y = Float.parseFloat(xmlPullParser.getText());
+                            point.y = Float.parseFloat(xmlPullParser.nextText());
                         }
                         break;
 
                     case XmlPullParser.END_TAG:
+                        if("Point".equals(xmlPullParser.getName())) {
+                            pointList.add(point);
+                        }else if ("DrawInfo".equals(xmlPullParser.getName())) {
+                            paintBoard.getmDrawList().add(drawInfo);
+                        }else if ("PaintBoard".equals(xmlPullParser.getName())) {
+                            paintBoardList.add(paintBoard);
+                        }
                     break;
                 }
                 type = xmlPullParser.next();
             }
+            Log.i("MainActivity","反序列化成功");
         }catch (Exception e){
             e.printStackTrace();
             Log.i("MainActivity","反序列失败");
+            Toast.makeText(context,"请选择合适的xml文件",Toast.LENGTH_SHORT).show();
         }
         return paintBoardList;
     }

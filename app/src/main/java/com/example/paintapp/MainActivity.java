@@ -2,23 +2,36 @@ package com.example.paintapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+
+import FileIO.BitmapControler;
 import FileIO.FilePicker;
 import FileIO.XmlManager;
 
@@ -42,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private View mAddView;
 
     private XmlManager mXMLManager;
+    private BitmapControler mBitmapControler;
+
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static final int REQUEST_CHOOSEFILE = 2;
@@ -123,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
+
     }
 
     @Override
@@ -193,9 +209,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (item.getItemId()){
             case R.id.saveAsXML:
                 Log.i("==>","点击保存为XML");
-                if(mXMLManager==null)
+                if (mXMLManager == null)
                     mXMLManager = new XmlManager(MainActivity.this);
-                mXMLManager.savaToXMl(mPaintBoardView.getmPaintBoardList());
+                if (mPaintBoardView.getmSumPaintBoards() == 1 && mPaintBoardView.getmDrawInfoList().size() < 1) {
+                    Toast.makeText(MainActivity.this,"当前没有笔迹需要保存",Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                final EditText editText = new EditText(this);
+                new AlertDialog.Builder(this)
+                        .setTitle("用以下名字保存xml文件")
+                        .setView(editText)
+                        .setNegativeButton("取消",null)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mXMLManager.savaToXMl(mPaintBoardView.getmPaintBoardList(),editText.getText().toString());
+                            }
+                        })
+                        .show();
                 break;
 
             case R.id.openXML:
@@ -211,24 +242,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.saveAsPhoto:
+                if (mBitmapControler == null)
+                    mBitmapControler = new BitmapControler(MainActivity.this);
+                Time time  =  new Time();
+                time.setToNow();
+                String str_time = time.format("%Y-%m-%d--%H:%M:%S");
+                Log.i("MainActivity",str_time);
+
+                Bitmap backgroundBitmap  = mBitmapControler.getBitMapByColor(mPaintBoardView.getWidth(),mPaintBoardView.getHeight(),Color.WHITE);
+                Bitmap forebackgroundBitmap = mPaintBoardView.getmBitmap();
+                Bitmap finalSaveBitmap = mBitmapControler.combineBitmap(backgroundBitmap,forebackgroundBitmap);
+                mBitmapControler.savaBitmapToPhoto(finalSaveBitmap,str_time);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode,int resultCode,Intent data){//选择文件返回
         super.onActivityResult(requestCode,resultCode,data);
         if(resultCode==RESULT_OK){
             switch(requestCode){
                   case REQUEST_CHOOSEFILE:
-                  Uri uri=data.getData();
-                  String chooseFilePath= FilePicker.getInstance(this).getChooseFileResultPath(uri);
-                  Log.i("==>","选择文件返回："+chooseFilePath);
-                  //sendFileMessage(chooseFilePath);
-                   break;
+                      Uri uri=data.getData();
+                      String chooseFilePath= FilePicker.getInstance(this).getChooseFileResultPath(uri);
+                      Log.i("==>","选择文件返回："+chooseFilePath);
+                      //sendFileMessage(chooseFilePath);
+                      if (mXMLManager == null)
+                          mXMLManager = new XmlManager(MainActivity.this);
+                      mPaintBoardView.switchPaintBoardList(mXMLManager.pullXmlToPaintBoardList(chooseFilePath));
+                      break;
             }
         }
     }
+
+
+
+
+
+
 
 }

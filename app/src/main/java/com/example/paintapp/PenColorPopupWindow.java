@@ -19,9 +19,11 @@ public class PenColorPopupWindow implements View.OnClickListener {
         //关联mView布局
         mView = LayoutInflater.from(context).inflate(R.layout.pen_color_popupwindow,null);
         //创建popupwindow，宽为屏幕宽度，高100
-        mPopupWindow = new PopupWindow(mView,new ScreenUtil(context).getScreenSize(ScreenUtil.WIDTH),150,true);
+        mPopupWindow = new PopupWindow(mView,new ScreenUtil(context).getScreenSize(ScreenUtil.WIDTH),150);
         //设置popwindow的背景颜色
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(0xaa008577));
+        // 设置相应外部事件
+        mPopupWindow.setOutsideTouchable(true);
 
         blackView = (TextView)mView.findViewById(R.id.color_black);
         redView = (TextView)mView.findViewById(R.id.color_red);

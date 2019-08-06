@@ -27,7 +27,9 @@ public class GeometrySelectPopupWindow implements View.OnClickListener {
         //关联mview布局
         mView = LayoutInflater.from(context).inflate(R.layout.geometric_graphics_selected_popupwindow,null);
         //创建popupwindow，宽为屏幕宽度，高100
-        mPopupWindow = new PopupWindow(mView,new ScreenUtil(context).getScreenSize(ScreenUtil.WIDTH),100,true);
+        mPopupWindow = new PopupWindow(mView,new ScreenUtil(context).getScreenSize(ScreenUtil.WIDTH),100);
+        // 设置相应外部事件
+        mPopupWindow.setOutsideTouchable(true);
         //设置popwindow的背景颜色
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(0xaa008577));
 

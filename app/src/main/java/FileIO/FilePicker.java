@@ -39,7 +39,7 @@ public class FilePicker {
         String chooseFilePath = null;
         if ("file".equalsIgnoreCase(uri.getScheme())) {//使用第三方应用打开
             chooseFilePath = uri.getPath();
-            Toast.makeText(context, chooseFilePath, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(context, chooseFilePath, Toast.LENGTH_SHORT).show();
             return chooseFilePath;
         }
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {//4.4以后
