@@ -70,13 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        int permission = ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (permission != PackageManager.PERMISSION_GRANTED){
-            Log.i("==>","没有权限");
-            // 申请权限
-            ActivityCompat.requestPermissions(MainActivity.this,PERMISSIONS_STORAGE,REQUEST_EXTERNAL_STORAGE);
-        }
+
 
         mPaintBoardView = (PaintBoardView)findViewById(R.id.paint_board_view);
         mPenColorView = (TextView)findViewById(R.id.pen_color);
@@ -143,13 +137,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.pen_color:
                 mPenColorPopupWindow.showPopupWindow(mPenColorView);
                 break;
 
             case R.id.pen:
-                if(!mPenView.isSelected()){
+                if (!mPenView.isSelected()) {
                     mPenView.setSelected(true);
                     mGeometryView.setSelected(false);
                     mErasorView.setSelected(false);
@@ -162,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.erasor:
-                if(!mErasorView.isSelected()){
+                if (!mErasorView.isSelected()) {
                     mErasorView.setSelected(true);
                     mGeometryView.setSelected(false);
                     mPenView.setSelected(false);
@@ -171,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.geometry:
-                if(!mGeometryView.isSelected()){
+                if (!mGeometryView.isSelected()) {
                     mGeometryView.setSelected(true);
                     mErasorView.setSelected(false);
                     mPenView.setSelected(false);
@@ -204,55 +198,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * 右上角菜单item的点击事件
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.saveAsXML:
-                Log.i("==>","点击保存为XML");
-                if (mXMLManager == null)
-                    mXMLManager = new XmlManager(MainActivity.this);
                 if (mPaintBoardView.getmSumPaintBoards() == 1 && mPaintBoardView.getmDrawInfoList().size() < 1) {
                     Toast.makeText(MainActivity.this,"当前没有笔迹需要保存",Toast.LENGTH_SHORT).show();
                     break;
                 }
-                final EditText editText = new EditText(this);
-                new AlertDialog.Builder(this)
-                        .setTitle("用以下名字保存xml文件")
-                        .setView(editText)
-                        .setNegativeButton("取消",null)
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                mXMLManager.savaToXMl(mPaintBoardView.getmPaintBoardList(),editText.getText().toString());
-                            }
-                        })
-                        .show();
+                savaAsXmlItemClick();
                 break;
 
             case R.id.openXML:
-                //选择文件【调用系统的文件管理】
-                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                //intent.setType(“image/*”);//选择图片
-                //intent.setType(“audio/*”); //选择音频
-                //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
-                //intent.setType(“video/*;image/*”);//同时选择视频和图片
-                intent.setType("*/*");//无类型限制
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                startActivityForResult(intent, REQUEST_CHOOSEFILE);
+                openXmlItemClick();
                 break;
 
             case R.id.saveAsPhoto:
-                if (mBitmapControler == null)
-                    mBitmapControler = new BitmapControler(MainActivity.this);
-                Time time  =  new Time();
-                time.setToNow();
-                String str_time = time.format("%Y-%m-%d--%H:%M:%S");
-                Log.i("MainActivity",str_time);
-
-                Bitmap backgroundBitmap  = mBitmapControler.getBitMapByColor(mPaintBoardView.getWidth(),mPaintBoardView.getHeight(),Color.WHITE);
-                Bitmap forebackgroundBitmap = mPaintBoardView.getmBitmap();
-                Bitmap finalSaveBitmap = mBitmapControler.combineBitmap(backgroundBitmap,forebackgroundBitmap);
-                mBitmapControler.savaBitmapToPhoto(finalSaveBitmap,str_time);
+                saveAsPhotoItemClick();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -264,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @param data
      */
     @Override
-    protected void onActivityResult(int requestCode,int resultCode,Intent data){//选择文件返回
+    protected void onActivityResult(int requestCode,int resultCode,Intent data) {//选择文件返回
         super.onActivityResult(requestCode,resultCode,data);
         if(resultCode==RESULT_OK){
             switch(requestCode){
@@ -281,8 +248,66 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * 右上角菜单saveAsXml的点击事件
+     */
+    private void savaAsXmlItemClick() {
+        int permission = ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED){
+            Log.i("==>","没有权限");
+            // 申请权限
+            ActivityCompat.requestPermissions(MainActivity.this,PERMISSIONS_STORAGE,REQUEST_EXTERNAL_STORAGE);
+        }
+        Log.i("==>","点击保存为XML");
+        if (mXMLManager == null)
+            mXMLManager = new XmlManager(MainActivity.this);
 
+        final EditText editText = new EditText(this);
+        new AlertDialog.Builder(this)
+                .setTitle("用以下名字保存xml文件")
+                .setView(editText)
+                .setNegativeButton("取消",null)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mXMLManager.savaToXMl(mPaintBoardView.getmPaintBoardList(),editText.getText().toString());
+                    }
+                })
+                .show();
+    }
 
+    /**
+     * 右上角菜单openXml的点击事件
+     */
+    private void openXmlItemClick() {
+        //选择文件【调用系统的文件管理】
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        //intent.setType(“image/*”);//选择图片
+        //intent.setType(“audio/*”); //选择音频
+        //intent.setType(“video/*”); //选择视频 （mp4 3gp 是android支持的视频格式）
+        //intent.setType(“video/*;image/*”);//同时选择视频和图片
+        intent.setType("*/*");//无类型限制
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, REQUEST_CHOOSEFILE);
+    }
+
+    /**
+     * 右上角菜单saveAsPhoto的点击事件
+     */
+    private void saveAsPhotoItemClick() {
+        if (mBitmapControler == null)
+            mBitmapControler = new BitmapControler(MainActivity.this);
+        Time time  =  new Time();
+        time.setToNow();
+        String str_time = time.format("%Y-%m-%d--%H:%M:%S");
+        Log.i("MainActivity",str_time);
+
+        Bitmap backgroundBitmap  = mBitmapControler.getBitMapByColor(mPaintBoardView.getWidth(),mPaintBoardView.getHeight(),Color.WHITE);
+        Bitmap forebackgroundBitmap = mPaintBoardView.getmBitmap();
+        Bitmap finalSaveBitmap = mBitmapControler.combineBitmap(backgroundBitmap,forebackgroundBitmap);
+        mBitmapControler.savaBitmapToPhoto(finalSaveBitmap,str_time);
+    }
 
 
 

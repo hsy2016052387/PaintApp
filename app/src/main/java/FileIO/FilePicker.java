@@ -35,16 +35,16 @@ public class FilePicker {
      * @param uri 接收的uri地址
      * @return
      */
-    public String getChooseFileResultPath(Uri uri){
+    public String getChooseFileResultPath(Uri uri) {
         String chooseFilePath = null;
-        if ("file".equalsIgnoreCase(uri.getScheme())) {//使用第三方应用打开
+        if ("file".equalsIgnoreCase(uri.getScheme())) {
             chooseFilePath = uri.getPath();
-            //Toast.makeText(context, chooseFilePath, Toast.LENGTH_SHORT).show();
             return chooseFilePath;
         }
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {//4.4以后
             chooseFilePath = getPath(context, uri);
-        } else {//4.4以下下系统调用方法
+        } else {
+            // 4.4以下下系统调用方法
             chooseFilePath = getRealPathFromURI(uri);
         }
         return chooseFilePath;

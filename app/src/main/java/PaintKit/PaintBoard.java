@@ -26,8 +26,8 @@ public class PaintBoard implements Serializable{
 
 
 
-    private List<DrawInfo> mDrawList;
-    private List<DrawInfo> mRemoveList;
+    private List<AbstractDrawInfo> mDrawList;
+    private List<AbstractDrawInfo> mRemoveList;
 
 
 
@@ -96,11 +96,11 @@ public class PaintBoard implements Serializable{
         return mErasor.getmSize();
     }
 
-    public List<DrawInfo> getmDrawList() {
+    public List<AbstractDrawInfo> getmDrawList() {
         return mDrawList;
     }
 
-    public List<DrawInfo> getmRemoveList(){
+    public List<AbstractDrawInfo> getmRemoveList(){
         return mRemoveList;
     }
 

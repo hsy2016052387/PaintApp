@@ -20,7 +20,7 @@ public class GeometrySelectPopupWindow implements View.OnClickListener {
 
     private AbstractGraphicsFactory mAbstractGraphicsFactory;
 
-    public GeometrySelectPopupWindow(Context context,PaintBoardView paintBoardView){
+    public GeometrySelectPopupWindow(Context context,PaintBoardView paintBoardView) {
         //接收传递过来的paintBoardview
         mPaintBoardView = paintBoardView;
 
@@ -55,9 +55,9 @@ public class GeometrySelectPopupWindow implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.geometry_straight_line:
-                if(!straightLine.isSelected()){
+                if (!straightLine.isSelected()) {
                     //选中该按钮
                     straightLine.setSelected(true);
                     retangle.setSelected(false);
@@ -70,7 +70,7 @@ public class GeometrySelectPopupWindow implements View.OnClickListener {
                 break;
 
             case R.id.geometry_retangle:
-                if(!retangle.isSelected()){
+                if (!retangle.isSelected()) {
                     //选中该按钮
                     retangle.setSelected(true);
                     straightLine.setSelected(false);
@@ -83,7 +83,7 @@ public class GeometrySelectPopupWindow implements View.OnClickListener {
                 break;
 
             case R.id.geometry_circle:
-                if(!circle.isSelected()){
+                if (!circle.isSelected()) {
                     //选中该按钮
                     circle.setSelected(true);
                     straightLine.setSelected(false);

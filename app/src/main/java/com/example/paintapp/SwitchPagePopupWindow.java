@@ -18,19 +18,16 @@ public class SwitchPagePopupWindow implements View.OnClickListener {
     private PopupWindow mPopupWindow;
     private View mView;
 
-
-
-    public SwitchPagePopupWindow(Context context,PaintBoardView paintBoardView){
-        //接收传递过来的PaintBoardView
+    public SwitchPagePopupWindow(Context context,PaintBoardView paintBoardView) {
+        // 接收传递过来的PaintBoardView
         mPaintBoardView = paintBoardView;
-
-        //关联mView布局
+        // 关联mView布局
         mView = LayoutInflater.from(context).inflate(R.layout.addpage_popupwindow,null);
-        ////创建popupwindow，宽为屏幕宽度，高100
+        // 创建popupwindow，宽为屏幕宽度，高100
         mPopupWindow = new PopupWindow(mView,500,100);
-        //设置popwindow的背景颜色
+        // 设置popwindow的背景颜色
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(0xaa008577));
-        // 设置相应外部事件
+        // 设置响应外部事件
         mPopupWindow.setOutsideTouchable(true);
 
         mAddPage = (ImageButton)mView.findViewById(R.id.add_page);
@@ -50,7 +47,7 @@ public class SwitchPagePopupWindow implements View.OnClickListener {
             public void preNextPageStatusChanged() {
                 mPreviewPage.setEnabled(mPaintBoardView.canPrePage());
                 mNextPage.setEnabled(mPaintBoardView.canNext());
-                mTextView.setText(mPaintBoardView.getmPaintBoardIndex()+1 +"/"+mPaintBoardView.getmSumPaintBoards());
+                mTextView.setText(mPaintBoardView.getmPaintBoardIndex() + 1 + "/" + mPaintBoardView.getmSumPaintBoards());
             }
         });
     }
@@ -61,7 +58,7 @@ public class SwitchPagePopupWindow implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.add_page:
                 mPaintBoardView.addNewPaintBoard();
                 break;

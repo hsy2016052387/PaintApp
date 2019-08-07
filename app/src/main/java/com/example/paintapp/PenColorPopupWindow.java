@@ -15,12 +15,12 @@ public class PenColorPopupWindow implements View.OnClickListener {
 
 
     private ChooseColorCallback mChooseColorCallback;
-    public PenColorPopupWindow(Context context){
-        //关联mView布局
+    public PenColorPopupWindow(Context context) {
+        // 关联mView布局
         mView = LayoutInflater.from(context).inflate(R.layout.pen_color_popupwindow,null);
-        //创建popupwindow，宽为屏幕宽度，高100
+        // 创建popupwindow，宽为屏幕宽度，高100
         mPopupWindow = new PopupWindow(mView,new ScreenUtil(context).getScreenSize(ScreenUtil.WIDTH),150);
-        //设置popwindow的背景颜色
+        // 设置popwindow的背景颜色
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(0xaa008577));
         // 设置相应外部事件
         mPopupWindow.setOutsideTouchable(true);
@@ -42,16 +42,12 @@ public class PenColorPopupWindow implements View.OnClickListener {
         purposView.setOnClickListener(this);
     }
 
-    public ChooseColorCallback getmChooseColorCallback() {
-        return mChooseColorCallback;
-    }
-
     public void setmChooseColorCallback(ChooseColorCallback mChooseColorCallback) {
         this.mChooseColorCallback = mChooseColorCallback;
     }
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.color_black:
                 mChooseColorCallback.onChooseColor(0xff000000);
                 break;
@@ -80,7 +76,7 @@ public class PenColorPopupWindow implements View.OnClickListener {
         mPopupWindow.showAsDropDown(view);
     }
 
-    public interface ChooseColorCallback{
+    public interface ChooseColorCallback {
         void onChooseColor(int color);
     }
 }

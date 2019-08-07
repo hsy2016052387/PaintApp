@@ -21,11 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import GeometryGraphics.AbstractGraphics;
-import PaintKit.DrawInfo;
+
+import PaintKit.AbstractDrawInfo;
+import PaintKit.CircleDrawInfo;
 import PaintKit.Erasor;
+import PaintKit.ErasorDrawInfo;
 import PaintKit.PaintBoard;
 import PaintKit.Pen;
+import PaintKit.PenDrawInfo;
 import PaintKit.Point;
+import PaintKit.RetangleDrawInfo;
+import PaintKit.StraightLineDrawInfo;
 
 import static android.content.ContentValues.TAG;
 
@@ -35,19 +41,11 @@ public class PaintBoardView extends View {
     private Paint mPaint,mOldPaint;
     private Path mPath;
 
-
-
     private Bitmap mBitmap;
     private Canvas mCanvas;
 
-//    private float mLastX;
-//    private float mLastY;
-
     private int mPaintBoardIndex;
     private int mSumPaintBoards;
-
-
-
 
     private Xfermode mXferModeClear;
     private Xfermode mXferModeDraw;
@@ -57,46 +55,35 @@ public class PaintBoardView extends View {
     private boolean mDrawing;
     private boolean mCanEraser;
 
-
-
-    private List<DrawInfo> mDrawInfoList;
-    private List<DrawInfo> mRemoveInfoList;
-
-
-
+    private List<AbstractDrawInfo> mDrawInfoList;
+    private List<AbstractDrawInfo> mRemoveInfoList;
     private List<PaintBoard> mPaintBoardList;
 
     private Mode mMode;
-    private DrawInfo mDrawInfo;
+    private AbstractDrawInfo mDrawInfo;
+    private AbstractGraphics mAbstractGraphics;
 
     private StatusChangeCallBack mStatusChangeCallBack;
     private PreNextPageStatusChangeCallBack mPreNextPageStatusChangeCallBack;
-
-
-
-    private AbstractGraphics mAbstractGraphics;
 
     public PaintBoardView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public enum Mode{
+    public enum Mode {
         DRAW,
         ERASOR,
         Geometry
     }
 
-    private void init(){
+    private void init() {
         mPaintBoardList = new ArrayList<>();
         mPaintBoard = new PaintBoard();
-
         mPaintBoardList.add(mPaintBoard);
 
         mPaintBoardIndex = 0;
         mSumPaintBoards = 1;
-
-
 
         mMode = Mode.DRAW;
         mDrawInfoList = mPaintBoard.getmDrawList();
@@ -124,12 +111,9 @@ public class PaintBoardView extends View {
 
         mXferModeDraw = null;
         mXferModeClear = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
-
-        //mPaint.setXfermode(mXferModeDraw);
-        //mPaint.setXfermode(null);
     }
 
-    private void initBitmap(){
+    private void initBitmap() {
         mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         mCanvas = new Canvas(mBitmap);
     }
@@ -149,12 +133,13 @@ public class PaintBoardView extends View {
             }
         }
     }
-    public void setPenSize(int size){
+
+    public void setPenSize(int size) {
         mPaint.setStrokeWidth(size);
         mPaintBoard.setPenSize(size);
     }
 
-    public List<DrawInfo> getmDrawInfoList() {
+    public List<AbstractDrawInfo> getmDrawInfoList() {
         return mDrawInfoList;
     }
 
@@ -168,7 +153,7 @@ public class PaintBoardView extends View {
         return mPaintBoard.getPenSize();
     }
 
-    public void setPenColor(int color){
+    public void setPenColor(int color) {
         mPaint.setColor(color);
         mPaintBoard.setPenColor(color);
     }
@@ -201,17 +186,17 @@ public class PaintBoardView extends View {
     }
     //判断能不能进行撤销操作
     public boolean canUndo(){
-        return mDrawInfoList!=null && mDrawInfoList.size()>0;
+        return mDrawInfoList != null && mDrawInfoList.size() > 0;
     }
 
     //判断能不能进行反撤销操作
     public boolean canRedo(){
-        return mRemoveInfoList!=null && mRemoveInfoList.size()>0;
+        return mRemoveInfoList != null && mRemoveInfoList.size() > 0;
     }
 
     //判断能不能按上一页
     public boolean canPrePage(){
-        return mPaintBoardIndex>0;
+        return mPaintBoardIndex > 0;
     }
 
     //判断能不能按下一页
@@ -219,159 +204,90 @@ public class PaintBoardView extends View {
         return mPaintBoardIndex < mSumPaintBoards - 1;
     }
     //保存笔迹到list中
-    private void saveDrawingPath(DrawInfo drawInfo){
+    private void saveDrawingPath(AbstractDrawInfo abstractDrawInfo) {
         if(mDrawInfoList==null)
             mDrawInfoList = new ArrayList<>();
-        if(drawInfo!=null)
-            mDrawInfoList.add(drawInfo);
+        if(abstractDrawInfo!=null)
+            mDrawInfoList.add(abstractDrawInfo);
         mCanEraser = true;
-
         if(mStatusChangeCallBack!=null)
             mStatusChangeCallBack.undoRedoStatusChanged();
     }
 
     //先把bitmap清空，再把储存在list中的笔迹重画一遍
-    private void reDraw(){
-        if(mDrawInfoList!=null){
-            //清空bitmap
-            if(mBitmap!=null)
-                mBitmap.eraseColor(Color.TRANSPARENT);
-
-            for(DrawInfo drawInfo:mDrawInfoList){
-                rebuildPath(drawInfo);
-            }
-            invalidate();
-        }
-
-    }
-
-    //利用DrawInfo中的信息把path重新画在bitMap上
-    private void rebuildPath(DrawInfo drawInfo){
-        float startX = drawInfo.getmPointList().get(0).x;
-        float startY = drawInfo.getmPointList().get(0).y;
-
-        mPath.moveTo(startX,startY);
-        switch (drawInfo.getType()){
-            case "Draw":
-                mPaint.setXfermode(mXferModeDraw);
-                mPaint.setColor(drawInfo.getmPen().getmColor());
-                mPaint.setStrokeWidth(drawInfo.getmPen().getmSize());
-
-                for(Point point: drawInfo.getmPointList()){
-                    mPath.quadTo(startX, startY, (point.x + startX) / 2, (point.y + startY) / 2);
-                    startX = point.x;
-                    startY = point.y;
-                }
-                mCanvas.drawPath(mPath,mPaint);
-                mPath.reset();
-                break;
-            case "Erasor":
-                mPaint.setXfermode(mXferModeClear);
-                mPaint.setColor(drawInfo.getmPen().getmColor());
-                mPaint.setStrokeWidth(drawInfo.getmPen().getmSize());
-                for(Point point: drawInfo.getmPointList()){
-                    mPath.quadTo(startX, startY, (point.x + startX) / 2, (point.y + startY) / 2);
-                    startX = point.x;
-                    startY = point.y;
-                }
-                mCanvas.drawPath(mPath,mPaint);
-                mPath.reset();
-                break;
-            //直线、矩形、圆形的DrawInfo中只有两个点
-            case "StraightLine":
-                mPaint.setXfermode(mXferModeDraw);
-                mPaint.setColor(drawInfo.getmPen().getmColor());
-                mPaint.setStrokeWidth(drawInfo.getmPen().getmSize());
-                //画线
-                mPath.lineTo(drawInfo.getmPointList().get(1).x,drawInfo.getmPointList().get(1).y);
-                mCanvas.drawPath(mPath,mPaint);
-                mPath.reset();
-                break;
-            case "Retangle":
-                mPaint.setXfermode(mXferModeDraw);
-                mPaint.setColor(drawInfo.getmPen().getmColor());
-                mPaint.setStrokeWidth(drawInfo.getmPen().getmSize());
-                //画矩形
-                float left = Math.min(drawInfo.getmPointList().get(0).x,drawInfo.getmPointList().get(1).x);
-                float top = Math.min(drawInfo.getmPointList().get(0).y,drawInfo.getmPointList().get(1).y);
-                float right = Math.max(drawInfo.getmPointList().get(0).x,drawInfo.getmPointList().get(1).x);
-                float bottom = Math.max(drawInfo.getmPointList().get(0).y,drawInfo.getmPointList().get(1).y);
-                mPath.addRect(left,top,right,bottom,Path.Direction.CW);
-                mCanvas.drawPath(mPath,mPaint);
-                mPath.reset();
-                break;
-            case "Circle":
-                mPaint.setXfermode(mXferModeDraw);
-                mPaint.setColor(drawInfo.getmPen().getmColor());
-                mPaint.setStrokeWidth(drawInfo.getmPen().getmSize());
-                //画圆形
-                float radius = (float) Math.sqrt(Math.pow((double)(drawInfo.getmPointList().get(0).x-drawInfo.getmPointList().get(1).x),2) + Math.pow((double)(drawInfo.getmPointList().get(0).y-drawInfo.getmPointList().get(1).y),2));
-                mPath.addCircle((drawInfo.getmPointList().get(0).x+drawInfo.getmPointList().get(1).x)/2,(drawInfo.getmPointList().get(0).y+drawInfo.getmPointList().get(1).y)/2,radius,Path.Direction.CW);
-                mCanvas.drawPath(mPath,mPaint);
-                mPath.reset();
-                break;
-        }
-    }
-
-    //撤销操作：把mDrawInfoList的最后一个对象移到mRemoveInfoList中（mRemoveInfoList用于反撤销），重画剩下的笔迹
-    public void undo(){
-        int size = mDrawInfoList==null ? 0 : mDrawInfoList.size();
-        if(size>0){
-            DrawInfo drawInfo = mDrawInfoList.remove(size-1);
-            if(mRemoveInfoList==null)
-                mRemoveInfoList = new ArrayList<>();
-            mRemoveInfoList.add(drawInfo);
-
-            if(size==1)
-                mCanEraser =false;
+    private void reDraw() {
+        if (mDrawInfoList != null) {
             //保存画笔信息
             mOldPaint.setStrokeWidth(mPaint.getStrokeWidth());
             mOldPaint.setColor(mPaint.getColor());
             mOldPaint.setXfermode(mPaint.getXfermode());
-            reDraw();
+
+            //清空bitmap
+            if (mBitmap != null)
+                mBitmap.eraseColor(Color.TRANSPARENT);
+
+            for (AbstractDrawInfo abstractDrawInfo:mDrawInfoList) {
+                mPaint.setXfermode(mXferModeDraw);
+                mPaint.setColor(abstractDrawInfo.getmPen().getmColor());
+                mPaint.setStrokeWidth(abstractDrawInfo.getmPen().getmSize());
+
+                abstractDrawInfo.rebuildPath(mPath);
+
+                mCanvas.drawPath(mPath,mPaint);
+                mPath.reset();
+            }
+            invalidate();
             //恢复画笔信息
             mPaint.setStrokeWidth(mOldPaint.getStrokeWidth());
             mPaint.setColor(mOldPaint.getColor());
             mPaint.setXfermode(mOldPaint.getXfermode());
-            if(mStatusChangeCallBack!=null)
+        }
+
+    }
+
+    //撤销操作：把mDrawInfoList的最后一个对象移到mRemoveInfoList中（mRemoveInfoList用于反撤销），重画剩下的笔迹
+    public void undo() {
+        int size = mDrawInfoList == null ? 0 : mDrawInfoList.size();
+        if (size > 0) {
+            AbstractDrawInfo abstractDrawInfo = mDrawInfoList.remove(size - 1);
+            if (mRemoveInfoList == null)
+                mRemoveInfoList = new ArrayList<>();
+            mRemoveInfoList.add(abstractDrawInfo);
+
+            if (size == 1)
+                mCanEraser =false;
+            reDraw();
+            if (mStatusChangeCallBack != null)
                 mStatusChangeCallBack.undoRedoStatusChanged();
         }
     }
 
     //反撤销：把mRemoveInfoList中的最后一条笔迹添加到mDrawInfoList，重画mDrawInfoList中的笔迹
-    public void redo(){
-        int size = mRemoveInfoList==null ? 0 : mRemoveInfoList.size();
-        if(size>0){
-            DrawInfo drawInfo = mRemoveInfoList.remove(size-1);
-            mDrawInfoList.add(drawInfo);
+    public void redo() {
+        int size = mRemoveInfoList == null ? 0 : mRemoveInfoList.size();
+        if (size > 0) {
+            AbstractDrawInfo abstractDrawInfo = mRemoveInfoList.remove(size-1);
+            mDrawInfoList.add(abstractDrawInfo);
             mCanEraser = true;
-            //保存画笔信息
-            mOldPaint.setStrokeWidth(mPaint.getStrokeWidth());
-            mOldPaint.setColor(mPaint.getColor());
-            mOldPaint.setXfermode(mPaint.getXfermode());
             reDraw();
-            //恢复画笔信息
-            mPaint.setStrokeWidth(mOldPaint.getStrokeWidth());
-            mPaint.setColor(mOldPaint.getColor());
-            mPaint.setXfermode(mOldPaint.getXfermode());
-            if(mStatusChangeCallBack!=null)
+            if (mStatusChangeCallBack != null)
                 mStatusChangeCallBack.undoRedoStatusChanged();
         }
     }
 
     //清空操作：删除mDrawInfoList和mRemoveInfoList的笔迹，清空bitmap
-    public void clear(){
-        if(mBitmap!=null){
-            if(mDrawInfoList!=null)
+    public void clear() {
+        if (mBitmap != null) {
+            if (mDrawInfoList != null)
                 mDrawInfoList.clear();
 
-            if(mRemoveInfoList!=null)
+            if (mRemoveInfoList != null)
                 mRemoveInfoList.clear();
 
             mCanEraser = false;
             mBitmap.eraseColor(Color.TRANSPARENT);
             invalidate();
-            if(mStatusChangeCallBack!=null)
+            if (mStatusChangeCallBack != null)
                 mStatusChangeCallBack.undoRedoStatusChanged();
         }
     }
@@ -379,7 +295,7 @@ public class PaintBoardView extends View {
 
 
     //设置PaintBoardView当前控制的PaintBoard（用于多页画图）
-    private void setCurrentPaintBoard(PaintBoard paintBoard){
+    private void setCurrentPaintBoard(PaintBoard paintBoard) {
         //更换PaintBoard对象
         mPaintBoard = paintBoard;
         //更换PaintBoard的DrawInfoList
@@ -392,7 +308,7 @@ public class PaintBoardView extends View {
     }
 
     //增加新的PaintBoard，用于多页画图
-    public void addNewPaintBoard(){
+    public void addNewPaintBoard() {
 
         mPaintBoardList.add(new PaintBoard());
         //总数+1
@@ -402,71 +318,52 @@ public class PaintBoardView extends View {
         //设置PaintBoardView当前控制的PaintBoard为最后一个PaintBoard
         setCurrentPaintBoard(mPaintBoardList.get(mPaintBoardIndex));
         //清空Bitmap
-        if(mBitmap!=null)
+        if (mBitmap != null)
             mBitmap.eraseColor(Color.TRANSPARENT);
         //设置不能擦除
         mCanEraser = false;
         //invalidate();
         //更新撤销反撤销按钮的状态（是否可点击）
-        if(mStatusChangeCallBack!=null)
+        if (mStatusChangeCallBack != null)
             mStatusChangeCallBack.undoRedoStatusChanged();
         //更新前一页和下一页的按钮状态
-        if(mPreNextPageStatusChangeCallBack!=null)
+        if (mPreNextPageStatusChangeCallBack != null)
             mPreNextPageStatusChangeCallBack.preNextPageStatusChanged();
 
     }
 
     //切换到上一页（多页画图）
-    public void prePage(){
-
-        if(mPaintBoardIndex>0){
-
+    public void prePage() {
+        if (mPaintBoardIndex > 0){
             //设置当前控制的PaintBoard为前一个
             setCurrentPaintBoard(mPaintBoardList.get(--mPaintBoardIndex));
             //更新撤销反撤销按钮的状态（是否可点击）
-            if(mStatusChangeCallBack!=null)
+            if (mStatusChangeCallBack != null)
                 mStatusChangeCallBack.undoRedoStatusChanged();
             //更新前一页和下一页的按钮状态
-            if(mPreNextPageStatusChangeCallBack!=null)
+            if (mPreNextPageStatusChangeCallBack != null)
                 mPreNextPageStatusChangeCallBack.preNextPageStatusChanged();
             //设置是否可擦除
             mCanEraser = canUndo();
-
-            //保存画笔信息
-            mOldPaint.setStrokeWidth(mPaint.getStrokeWidth());
-            mOldPaint.setColor(mPaint.getColor());
-            mOldPaint.setXfermode(mPaint.getXfermode());
             reDraw();
-            //恢复画笔信息
-            mPaint.setStrokeWidth(mOldPaint.getStrokeWidth());
-            mPaint.setColor(mOldPaint.getColor());
-            mPaint.setXfermode(mOldPaint.getXfermode());
         }
     }
 
     //切换到下一页（多页画图）
-    public void nextPage(){
-        if(mPaintBoardIndex < mSumPaintBoards-1){
+    public void nextPage() {
+        if (mPaintBoardIndex < mSumPaintBoards - 1){
 
             //设置当前控制的PaintBoard为下一个
             setCurrentPaintBoard(mPaintBoardList.get(++mPaintBoardIndex));
             //更新撤销反撤销按钮的状态（是否可点击）
-            if(mStatusChangeCallBack!=null)
+            if (mStatusChangeCallBack != null)
                 mStatusChangeCallBack.undoRedoStatusChanged();
             //更新前一页和下一页的按钮状态
-            if(mPreNextPageStatusChangeCallBack!=null)
+            if (mPreNextPageStatusChangeCallBack != null)
                 mPreNextPageStatusChangeCallBack.preNextPageStatusChanged();
             //设置是否可擦除
             mCanEraser = canUndo();
-            //保存画笔信息
-            mOldPaint.setStrokeWidth(mPaint.getStrokeWidth());
-            mOldPaint.setColor(mPaint.getColor());
-            mOldPaint.setXfermode(mPaint.getXfermode());
             reDraw();
-            //恢复画笔信息
-            mPaint.setStrokeWidth(mOldPaint.getStrokeWidth());
-            mPaint.setColor(mOldPaint.getColor());
-            mPaint.setXfermode(mOldPaint.getXfermode());
         }
     }
 
@@ -492,55 +389,47 @@ public class PaintBoardView extends View {
 
         setCurrentPaintBoard(mPaintBoardList.get(mPaintBoardIndex));
         //更新撤销反撤销按钮的状态（是否可点击）
-        if(mStatusChangeCallBack!=null)
+        if (mStatusChangeCallBack != null)
             mStatusChangeCallBack.undoRedoStatusChanged();
         //更新前一页和下一页的按钮状态
-        if(mPreNextPageStatusChangeCallBack!=null)
+        if (mPreNextPageStatusChangeCallBack != null)
             mPreNextPageStatusChangeCallBack.preNextPageStatusChanged();
         //设置是否可擦除
         mCanEraser = canUndo();
-        //保存画笔信息
-        mOldPaint.setStrokeWidth(mPaint.getStrokeWidth());
-        mOldPaint.setColor(mPaint.getColor());
-        mOldPaint.setXfermode(mPaint.getXfermode());
         reDraw();
-        //恢复画笔信息
-        mPaint.setStrokeWidth(mOldPaint.getStrokeWidth());
-        mPaint.setColor(mOldPaint.getColor());
-        mPaint.setXfermode(mOldPaint.getXfermode());
     }
 
 
 
-    //----------------------------------内部接口------------------------------------
-    //用于设置撤销和反撤销按钮的状态
-    public interface StatusChangeCallBack{
+    // ----------------------------------内部接口------------------------------------
+    // 用于设置撤销和反撤销按钮的状态
+    public interface StatusChangeCallBack {
         void undoRedoStatusChanged();
     }
 
-    public interface PreNextPageStatusChangeCallBack{
+    public interface PreNextPageStatusChangeCallBack {
         void preNextPageStatusChanged();
     }
-    //----------------------------------内部接口------------------------------------
+    // ----------------------------------内部接口------------------------------------
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (mBitmap != null) {
             canvas.drawBitmap(mBitmap, 0, 0, null);
         }
-        if(mMode == Mode.Geometry && mDrawing && mAbstractGraphics!=null)
+        if (mMode == Mode.Geometry && mDrawing && mAbstractGraphics != null)
             mAbstractGraphics.drawToCanvas(canvas,mStartPoint,mEndPoint,mPaint);
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event){
+    public boolean onTouchEvent(MotionEvent event) {
         final int action = event.getAction() & MotionEvent.ACTION_MASK;
 
-        switch (action){
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
                 Log.i(TAG, "down");
 
-                //开始书写笔迹
+                // 开始书写笔迹
                 mDrawing = true;
                 mStartPoint.x = event.getX();
                 mStartPoint.y = event.getY();
@@ -548,17 +437,23 @@ public class PaintBoardView extends View {
                     mPath = new Path();
                 }
 
-                //书写或几何图形模式或可擦除模式
-                if(mMode ==  Mode.DRAW || mMode == Mode.Geometry || mCanEraser){
-                    switch (mMode){
+                // 书写或几何图形模式或可擦除模式
+                if (mMode ==  Mode.DRAW || mMode == Mode.Geometry || mCanEraser){
+                    switch (mMode) {
                         case DRAW:
-                            mDrawInfo = new DrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()),"Draw");
+                            mDrawInfo = new PenDrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
                             break;
                         case ERASOR:
-                            mDrawInfo = new DrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()),"Erasor");
+                            mDrawInfo = new ErasorDrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
                             break;
                         case Geometry:
-                            mDrawInfo = new DrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()),mAbstractGraphics.getType());
+                            if (mAbstractGraphics.getType().equals("StraightLine")) {
+                                mDrawInfo = new StraightLineDrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
+                            }else if (mAbstractGraphics.getType().equals("Retangle")) {
+                                mDrawInfo = new RetangleDrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
+                            }else if (mAbstractGraphics.getType().equals("Circle")) {
+                                mDrawInfo = new CircleDrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
+                            }
                             break;
                     }
                     mDrawInfo.getmPointList().add(new Point(mStartPoint.x,mStartPoint.y));
@@ -573,8 +468,6 @@ public class PaintBoardView extends View {
                 mEndPoint.x = event.getX();
                 mEndPoint.y = event.getY();
 
-                //mPath.reset();
-                //mPath.addRect(left,top,right,bottom,Path.Direction.CW);
                 if (mBitmap == null) {
                     initBitmap();
                 }
@@ -582,15 +475,15 @@ public class PaintBoardView extends View {
                     break;
                 }
 
-                //画笔或橡皮擦模式时才在move的过程中获取点
-                if(mDrawInfo!=null && mMode != Mode.Geometry){
+                // 画笔或橡皮擦模式时才在move的过程中获取点
+                if (mDrawInfo != null && mMode != Mode.Geometry){
                     mDrawInfo.getmPointList().add(new Point(mEndPoint.x,mEndPoint.y));
                 }
 
 
-                //如果是画笔和橡皮擦模式，直接画到bitmap上
-                if(mMode!= Mode.Geometry){
-                    //这里终点设为两点的中心点的目的在于使绘制的曲线更平滑，如果终点直接设置为x,y，效果和lineto是一样的,实际是折线效果
+                // 如果是画笔和橡皮擦模式，直接画到bitmap上
+                if (mMode != Mode.Geometry){
+                    // 这里终点设为两点的中心点的目的在于使绘制的曲线更平滑，如果终点直接设置为x,y，效果和lineto是一样的,实际是折线效果
                     mPath.quadTo(mStartPoint.x, mStartPoint.y, (mEndPoint.x + mStartPoint.x) / 2, (mEndPoint.y + mStartPoint.y) / 2);
                     mCanvas.drawPath(mPath,mPaint);
                     mStartPoint.x = event.getX();
@@ -603,19 +496,19 @@ public class PaintBoardView extends View {
             case MotionEvent.ACTION_UP:
                 Log.i(TAG, "up");
 
-                if(mMode == Mode.Geometry && mAbstractGraphics!=null){
+                if (mMode == Mode.Geometry && mAbstractGraphics != null) {
                     mAbstractGraphics.saveToPath(mPath,mStartPoint,mEndPoint);
                     mCanvas.drawPath(mPath,mPaint);
                 }
 
-                //up的时候获取最后一个点并保存路径
-                if(mDrawInfo!=null){
+                // up的时候获取最后一个点并保存路径
+                if (mDrawInfo != null) {
                     mDrawInfo.getmPointList().add(new Point(mEndPoint.x,mEndPoint.y));
                     saveDrawingPath(mDrawInfo);
                 }
 
 
-                //结束书写
+                // 结束书写
                 mDrawInfo = null;
                 mDrawing = false;
                 mPath.reset();

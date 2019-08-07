@@ -1,36 +1,23 @@
 package PaintKit;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Path;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DrawInfo {
-
-//    private Paint mPaint;
-//    private Path mPath;
-//
-//    public DrawInfo(Paint paint,Path path){
-//        mPaint = paint;
-//        mPath = path;
-//    }
-//
-//    public void draw(Canvas canvas){
-//        canvas.drawPath(mPath,mPaint);
-//    }
-
+public abstract class AbstractDrawInfo {
     private AbstractPen mPen;
     private List<Point> mPointList;
     private String type;
 
-    public DrawInfo(){}
-    public DrawInfo(AbstractPen pen,String type){
-        mPen = pen;
+    public AbstractDrawInfo() {}
+
+    public AbstractDrawInfo(AbstractPen mPen) {
+        this.mPen = mPen;
         mPointList = new ArrayList<>();
-        this.type = type;
     }
+
+    public abstract void rebuildPath(Path path);
 
     public void setmPen(AbstractPen mPen) {
         this.mPen = mPen;

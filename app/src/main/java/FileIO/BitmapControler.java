@@ -26,9 +26,9 @@ public class BitmapControler {
      * @return 创建一个指定背景颜色的bitmap
      */
     public Bitmap getBitMapByColor(int width,int height,int color) {
-        if(backgroundBitmap == null) {
+        if (backgroundBitmap == null) {
             int[] colors = new int[width * height];
-            for(int i = 0; i < colors.length; i++) {
+            for (int i = 0; i < colors.length; i++) {
                 colors[i] = color;
             }
             backgroundBitmap = Bitmap.createBitmap(colors,width,height,Bitmap.Config.ARGB_8888).copy(Bitmap.Config.ARGB_8888,true);
@@ -43,7 +43,7 @@ public class BitmapControler {
      * @param bitmap 当前的bitmap
      * @param fileName 要保存的文件名
      */
-    public void savaBitmapToPhoto(Bitmap bitmap,String fileName){
+    public void savaBitmapToPhoto(Bitmap bitmap,String fileName) {
         String imagePath =  Environment.getExternalStorageDirectory().toString() + "/BitmapPhoto" + fileName + ".png";
         File file = new File(imagePath);
         if (file.exists()) {
@@ -63,7 +63,7 @@ public class BitmapControler {
 
     }
 
-    public Bitmap combineBitmap(Bitmap backgroundBitmap,Bitmap foregroundBitmap){
+    public Bitmap combineBitmap(Bitmap backgroundBitmap,Bitmap foregroundBitmap) {
         if (finalBitmap == null) {
             finalBitmap = Bitmap.createBitmap(backgroundBitmap.getWidth(),backgroundBitmap.getHeight(),Bitmap.Config.ARGB_8888);
         }else {
@@ -76,6 +76,6 @@ public class BitmapControler {
         canvas.drawBitmap(foregroundBitmap,0,0,null);
         canvas.save();
         canvas.restore();
-        return  finalBitmap;
+        return finalBitmap;
     }
 }

@@ -18,11 +18,16 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import PaintKit.AbstractDrawInfo;
 import PaintKit.AbstractPen;
-import PaintKit.DrawInfo;
+import PaintKit.CircleDrawInfo;
+import PaintKit.ErasorDrawInfo;
 import PaintKit.PaintBoard;
 import PaintKit.Pen;
+import PaintKit.PenDrawInfo;
 import PaintKit.Point;
+import PaintKit.RetangleDrawInfo;
+import PaintKit.StraightLineDrawInfo;
 
 
 public class XmlManager {
@@ -37,7 +42,7 @@ public class XmlManager {
      * 保存为将List<PaintBoard>保存为xml文件 格式如下：
      * <PaintBoards>
      *         <PaintBoard>
-     *             <DrawInfo>
+     *             <...DrawInfo>
      *                 <Pen>
      *                     <Size> size </>
      *                     <Color> color </>
@@ -52,7 +57,7 @@ public class XmlManager {
      *                     .
      *                     .
      *                 </>
-     *             </DrawInfo>
+     *             </...DrawInfo>
      *             .
      *             .
      *             .
@@ -70,23 +75,23 @@ public class XmlManager {
             return;
         }
         Log.i("==>","开始序列化");
-        //创建负责序列化的对象
+        // 创建负责序列化的对象
         XmlSerializer serializer =  Xml.newSerializer();
         File path = new File(Environment.getExternalStorageDirectory().getPath());
         File file = new File(path + "/" + fileName + ".xml");
         FileOutputStream os;
         try {
             // 判断sd卡是否存在
-            if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())){
+            if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
                 // 检查文件是否存在，存在则停止
-                if (file.exists()){
+                if (file.exists()) {
                     Toast.makeText(context,"文件已存在，请重新命名",Toast.LENGTH_SHORT).show();
                     return;
                 }
                 file.createNewFile();
                 os = new FileOutputStream(file);
-                //指定xml文件保存的路径
-                //OutputStream os = context.openFileOutput("test.xml", Context.MODE_PRIVATE);
+                // 指定xml文件保存的路径
+                // OutputStream os = context.openFileOutput("test.xml", Context.MODE_PRIVATE);
                 // 设置指定目录
                 serializer.setOutput(os, "UTF-8");
 
@@ -98,69 +103,69 @@ public class XmlManager {
                 // 开始根标签
                 // 参数一：命名空间   参数二：标签名称
                 serializer.startTag(null, "PaintBoards");
-                for(PaintBoard paintBoard: mPaintBoardList){
-                    //开始PaintBoard标签
+                for (PaintBoard paintBoard: mPaintBoardList) {
+                    // 开始PaintBoard标签
                     serializer.startTag(null,"PaintBoard");
 
-                    for(DrawInfo drawInfo:paintBoard.getmDrawList()){
-                        //开始DrawInfo标签(由pen type points组成)
-                        serializer.startTag(null,"DrawInfo");
-                        //开始pen标签（由size color组成）
+                    for (AbstractDrawInfo abstractDrawInfo:paintBoard.getmDrawList()) {
+                        // 开始DrawInfo标签(由pen type points组成)
+                        serializer.startTag(null,abstractDrawInfo.getType());
+                        // 开始pen标签（由size color组成）
                         serializer.startTag(null,"Pen");
-                        //设置size
+                        // 设置size
                         serializer.startTag(null,"Size");
-                        serializer.text(drawInfo.getmPen().getmSize()+"");
+                        serializer.text(abstractDrawInfo.getmPen().getmSize() + "");
                         serializer.endTag(null,"Size");
 
 
-                        //设置color
+                        // 设置color
                         serializer.startTag(null,"Color");
-                        serializer.text(drawInfo.getmPen().getmColor()+"");
+                        serializer.text(abstractDrawInfo.getmPen().getmColor() + "");
                         serializer.endTag(null,"Color");
 
-                        //结束pen标签
+                        // 结束pen标签
                         serializer.endTag(null,"Pen");
 
-                        //设置type
+                        // 设置type
                         serializer.startTag(null,"Type");
-                        serializer.text(drawInfo.getType());
+                        serializer.text(abstractDrawInfo.getType());
                         serializer.endTag(null,"Type");
 
-                        //开始Points标签
+                        // 开始Points标签
                         serializer.startTag(null,"Points");
-                        for(Point point: drawInfo.getmPointList()){
-                            //开始Point标签（由x y组成）
+                        for (Point point: abstractDrawInfo.getmPointList()) {
+                            // 开始Point标签（由x y组成）
                             serializer.startTag(null,"Point");
-                            //设置x
+                            // 设置x
                             serializer.startTag(null,"X");
                             serializer.text(point.x+"");
                             serializer.endTag(null,"X");
-                            //设置y
+                            // 设置y
                             serializer.startTag(null,"Y");
                             serializer.text(point.y+"");
                             serializer.endTag(null,"Y");
-                            //结束Point标签
+                            // 结束Point标签
                             serializer.endTag(null,"Point");
                         }
-                        //结束Points标签
+                        // 结束Points标签
                         serializer.endTag(null,"Points");
-                        //结束DrawInfo标签
-                        serializer.endTag(null,"DrawInfo");
+                        // 结束DrawInfo标签
+                        serializer.endTag(null,abstractDrawInfo.getType());
                     }
-                    //结束PaintBoard标签
+                    // 结束PaintBoard标签
                     serializer.endTag(null, "PaintBoard");
                 }
                 // 结束根标签
                 serializer.endTag(null, "PaintBoards");
 
-                //结束文档
+                // 结束文档
                 serializer.endDocument();
 
                 os.close();
 
                 Log.i("==>","序列化成功");
                 Toast.makeText(context,"保存XML成功",Toast.LENGTH_SHORT).show();
-            }else{
+            }else {
                 Log.i("==>","不存在sd卡");
             }
 
@@ -176,13 +181,13 @@ public class XmlManager {
      * @param path xml文件的路径
      * @return 返回反序列化后生成的List<PaintBoard>
      */
-    public List<PaintBoard> pullXmlToPaintBoardList(String path){
+    public List<PaintBoard> pullXmlToPaintBoardList(String path) {
         Log.i("MainActivity", " 开始反序列化");
         XmlPullParser xmlPullParser = Xml.newPullParser();
         List<PaintBoard> paintBoardList = new ArrayList<>();
         List<Point> pointList = null;
         PaintBoard paintBoard = null;
-        DrawInfo drawInfo = null;
+        AbstractDrawInfo abstractDrawInfo = null;
         AbstractPen pen = null;
         Point point = null;
         try {
@@ -192,24 +197,49 @@ public class XmlManager {
 
             int type = xmlPullParser.getEventType();
             while (type != XmlPullParser.END_DOCUMENT) {
-                switch (type){
+                switch (type) {
                     case XmlPullParser.START_TAG:
+//                        switch (xmlPullParser.getName()) {
+//                            case "PaintBoard":
+//                                paintBoard = new PaintBoard();
+//                                break;
+//                            case "PenDrawInfo":
+//                                abstractDrawInfo = new PenDrawInfo();
+//                                break;
+//                            case "ErasorDrawInfo":
+//                                abstractDrawInfo = new ErasorDrawInfo();
+//                                break;
+//                            case "StraightLineDrawInfo":
+//                                abstractDrawInfo = new StraightLineDrawInfo();
+//                                break;
+//                            case "StraightLineDrawInfo":
+//                                abstractDrawInfo = new StraightLineDrawInfo();
+//                                break;
+//                        }
                         if ("PaintBoard".equals(xmlPullParser.getName())) {
                             paintBoard = new PaintBoard();
-                        }else if ("DrawInfo".equals(xmlPullParser.getName())) {
-                            drawInfo = new DrawInfo();
+                        }else if ("PenDrawInfo".equals(xmlPullParser.getName())) {
+                            abstractDrawInfo = new PenDrawInfo();
+                        }else if ("ErasorDrawInfo".equals(xmlPullParser.getName())) {
+                            abstractDrawInfo = new ErasorDrawInfo();
+                        }else if ("StraightLineDrawInfo".equals(xmlPullParser.getName())) {
+                            abstractDrawInfo = new StraightLineDrawInfo();
+                        }else if ("RetangleDrawInfo".equals(xmlPullParser.getName())) {
+                            abstractDrawInfo = new RetangleDrawInfo();
+                        }else if ("CircleDrawInfo".equals(xmlPullParser.getName())) {
+                            abstractDrawInfo = new CircleDrawInfo();
                         }else if ("Pen".equals(xmlPullParser.getName())) {
                             pen = new Pen();
                         }else if ("Size".equals(xmlPullParser.getName())) {
                             pen.setmSize(Integer.parseInt(xmlPullParser.nextText()));
                         }else if ("Color".equals(xmlPullParser.getName())) {
                             pen.setmColor(Integer.parseInt(xmlPullParser.nextText()));
-                            drawInfo.setmPen(pen);
+                            abstractDrawInfo.setmPen(pen);
                         }else if ("Type".equals(xmlPullParser.getName())) {
-                            drawInfo.setType(xmlPullParser.nextText());
+                            abstractDrawInfo.setType(xmlPullParser.nextText());
                         }else if ("Points".equals(xmlPullParser.getName())) {
                             pointList = new ArrayList<>();
-                            drawInfo.setmPointList(pointList);
+                            abstractDrawInfo.setmPointList(pointList);
                         }else if ("Point".equals(xmlPullParser.getName())) {
                             point = new Point();
                         }else if ("X".equals(xmlPullParser.getName())) {
@@ -222,8 +252,8 @@ public class XmlManager {
                     case XmlPullParser.END_TAG:
                         if("Point".equals(xmlPullParser.getName())) {
                             pointList.add(point);
-                        }else if ("DrawInfo".equals(xmlPullParser.getName())) {
-                            paintBoard.getmDrawList().add(drawInfo);
+                        }else if ((xmlPullParser.getName()).contains("DrawInfo")) {
+                            paintBoard.getmDrawList().add(abstractDrawInfo);
                         }else if ("PaintBoard".equals(xmlPullParser.getName())) {
                             paintBoardList.add(paintBoard);
                         }
@@ -232,7 +262,7 @@ public class XmlManager {
                 type = xmlPullParser.next();
             }
             Log.i("MainActivity","反序列化成功");
-        }catch (Exception e){
+        }catch (Exception e) {
             e.printStackTrace();
             Log.i("MainActivity","反序列失败");
             Toast.makeText(context,"请选择合适的xml文件",Toast.LENGTH_SHORT).show();
