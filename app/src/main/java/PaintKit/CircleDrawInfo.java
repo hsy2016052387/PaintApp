@@ -23,7 +23,9 @@ public class CircleDrawInfo extends AbstractDrawInfo {
         float startY = super.getmPointList().get(0).y;
         path.moveTo(startX,startY);
 
-        float diameter = (float) Math.sqrt(Math.pow((double)(super.getmPointList().get(0).x-super.getmPointList().get(1).x),2) + Math.pow((double)(super.getmPointList().get(0).y-super.getmPointList().get(1).y),2));
+        double deltaX = super.getmPointList().get(0).x - super.getmPointList().get(1).x;
+        double deltaY = super.getmPointList().get(0).y - super.getmPointList().get(1).y;
+        float diameter = (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY);
         path.addCircle((super.getmPointList().get(0).x+super.getmPointList().get(1).x)/2,(super.getmPointList().get(0).y+super.getmPointList().get(1).y)/2,diameter/2,Path.Direction.CW);
     }
 }

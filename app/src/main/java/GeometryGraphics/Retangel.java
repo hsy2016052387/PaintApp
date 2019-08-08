@@ -8,7 +8,7 @@ import android.graphics.PointF;
 public class Retangel extends AbstractGraphics {
     public Retangel(){
         super();
-        super.setType("Retangle");
+        super.setType("RetangleDrawInfo");
     }
     @Override
     public void drawToCanvas(Canvas canvas, PointF p1, PointF p2, Paint paint) {

@@ -21,6 +21,7 @@ import java.util.List;
 import PaintKit.AbstractDrawInfo;
 import PaintKit.AbstractPen;
 import PaintKit.CircleDrawInfo;
+import PaintKit.DrawInfoSimpleFactory;
 import PaintKit.ErasorDrawInfo;
 import PaintKit.PaintBoard;
 import PaintKit.Pen;
@@ -199,53 +200,36 @@ public class XmlManager {
             while (type != XmlPullParser.END_DOCUMENT) {
                 switch (type) {
                     case XmlPullParser.START_TAG:
-//                        switch (xmlPullParser.getName()) {
-//                            case "PaintBoard":
-//                                paintBoard = new PaintBoard();
-//                                break;
-//                            case "PenDrawInfo":
-//                                abstractDrawInfo = new PenDrawInfo();
-//                                break;
-//                            case "ErasorDrawInfo":
-//                                abstractDrawInfo = new ErasorDrawInfo();
-//                                break;
-//                            case "StraightLineDrawInfo":
-//                                abstractDrawInfo = new StraightLineDrawInfo();
-//                                break;
-//                            case "StraightLineDrawInfo":
-//                                abstractDrawInfo = new StraightLineDrawInfo();
-//                                break;
-//                        }
-                        if ("PaintBoard".equals(xmlPullParser.getName())) {
-                            paintBoard = new PaintBoard();
-                        }else if ("PenDrawInfo".equals(xmlPullParser.getName())) {
-                            abstractDrawInfo = new PenDrawInfo();
-                        }else if ("ErasorDrawInfo".equals(xmlPullParser.getName())) {
-                            abstractDrawInfo = new ErasorDrawInfo();
-                        }else if ("StraightLineDrawInfo".equals(xmlPullParser.getName())) {
-                            abstractDrawInfo = new StraightLineDrawInfo();
-                        }else if ("RetangleDrawInfo".equals(xmlPullParser.getName())) {
-                            abstractDrawInfo = new RetangleDrawInfo();
-                        }else if ("CircleDrawInfo".equals(xmlPullParser.getName())) {
-                            abstractDrawInfo = new CircleDrawInfo();
-                        }else if ("Pen".equals(xmlPullParser.getName())) {
-                            pen = new Pen();
-                        }else if ("Size".equals(xmlPullParser.getName())) {
-                            pen.setmSize(Integer.parseInt(xmlPullParser.nextText()));
-                        }else if ("Color".equals(xmlPullParser.getName())) {
-                            pen.setmColor(Integer.parseInt(xmlPullParser.nextText()));
-                            abstractDrawInfo.setmPen(pen);
-                        }else if ("Type".equals(xmlPullParser.getName())) {
-                            abstractDrawInfo.setType(xmlPullParser.nextText());
-                        }else if ("Points".equals(xmlPullParser.getName())) {
-                            pointList = new ArrayList<>();
-                            abstractDrawInfo.setmPointList(pointList);
-                        }else if ("Point".equals(xmlPullParser.getName())) {
-                            point = new Point();
-                        }else if ("X".equals(xmlPullParser.getName())) {
-                            point.x = Float.parseFloat(xmlPullParser.nextText());
-                        }else if ("Y".equals(xmlPullParser.getName())) {
-                            point.y = Float.parseFloat(xmlPullParser.nextText());
+                        switch (xmlPullParser.getName()) {
+                            case "PaintBoard":
+                                paintBoard = new PaintBoard();
+                                break;
+                            case "Pen":
+                                pen = new Pen();
+                                break;
+                            case "Size":
+                                pen.setmSize(Integer.parseInt(xmlPullParser.nextText()));
+                                break;
+                            case "Color":
+                                pen.setmColor(Integer.parseInt(xmlPullParser.nextText()));
+                                break;
+                            case "Type":
+                                abstractDrawInfo = DrawInfoSimpleFactory.createConcreDrawInfo(xmlPullParser.nextText());
+                                abstractDrawInfo.setmPen(pen);
+                                break;
+                            case "Points":
+                                pointList = new ArrayList<>();
+                                abstractDrawInfo.setmPointList(pointList);
+                                break;
+                            case "Point":
+                                point = new Point();
+                                break;
+                            case "X":
+                                point.x = Float.parseFloat(xmlPullParser.nextText());
+                                break;
+                            case "Y":
+                                point.y = Float.parseFloat(xmlPullParser.nextText());
+                                break;
                         }
                         break;
 
@@ -269,5 +253,4 @@ public class XmlManager {
         }
         return paintBoardList;
     }
-
 }

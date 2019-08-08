@@ -8,7 +8,7 @@ import android.graphics.PointF;
 public class Circle extends AbstractGraphics {
     public Circle(){
         super();
-        super.setType("Circle");
+        super.setType("CircleDrawInfo");
     }
     @Override
     public void drawToCanvas(Canvas canvas, PointF p1, PointF p2, Paint paint) {

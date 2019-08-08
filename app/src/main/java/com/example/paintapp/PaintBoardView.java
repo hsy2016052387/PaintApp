@@ -24,6 +24,7 @@ import GeometryGraphics.AbstractGraphics;
 
 import PaintKit.AbstractDrawInfo;
 import PaintKit.CircleDrawInfo;
+import PaintKit.DrawInfoSimpleFactory;
 import PaintKit.Erasor;
 import PaintKit.ErasorDrawInfo;
 import PaintKit.PaintBoard;
@@ -111,6 +112,8 @@ public class PaintBoardView extends View {
 
         mXferModeDraw = null;
         mXferModeClear = new PorterDuffXfermode(PorterDuff.Mode.CLEAR);
+
+        //setLayerType(LAYER_TYPE_SOFTWARE,null);
     }
 
     private void initBitmap() {
@@ -227,9 +230,13 @@ public class PaintBoardView extends View {
                 mBitmap.eraseColor(Color.TRANSPARENT);
 
             for (AbstractDrawInfo abstractDrawInfo:mDrawInfoList) {
-                mPaint.setXfermode(mXferModeDraw);
-                mPaint.setColor(abstractDrawInfo.getmPen().getmColor());
-                mPaint.setStrokeWidth(abstractDrawInfo.getmPen().getmSize());
+                if (!abstractDrawInfo.getType().equals("ErasorDrawInfo")) {
+                    mPaint.setXfermode(mXferModeDraw);
+                    mPaint.setColor(abstractDrawInfo.getmPen().getmColor());
+                    mPaint.setStrokeWidth(abstractDrawInfo.getmPen().getmSize());
+                }else {
+                    mPaint.setXfermode(mXferModeClear);
+                }
 
                 abstractDrawInfo.rebuildPath(mPath);
 
@@ -322,7 +329,7 @@ public class PaintBoardView extends View {
             mBitmap.eraseColor(Color.TRANSPARENT);
         //设置不能擦除
         mCanEraser = false;
-        //invalidate();
+        invalidate();
         //更新撤销反撤销按钮的状态（是否可点击）
         if (mStatusChangeCallBack != null)
             mStatusChangeCallBack.undoRedoStatusChanged();
@@ -428,7 +435,6 @@ public class PaintBoardView extends View {
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 Log.i(TAG, "down");
-
                 // 开始书写笔迹
                 mDrawing = true;
                 mStartPoint.x = event.getX();
@@ -436,24 +442,17 @@ public class PaintBoardView extends View {
                 if (mPath == null) {
                     mPath = new Path();
                 }
-
                 // 书写或几何图形模式或可擦除模式
                 if (mMode ==  Mode.DRAW || mMode == Mode.Geometry || mCanEraser){
                     switch (mMode) {
                         case DRAW:
-                            mDrawInfo = new PenDrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
+                            mDrawInfo = DrawInfoSimpleFactory.createConcreDrawInfoWithPen("PenDrawInfo",new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
                             break;
                         case ERASOR:
-                            mDrawInfo = new ErasorDrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
+                            mDrawInfo = DrawInfoSimpleFactory.createConcreDrawInfoWithPen("ErasorDrawInfo",new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
                             break;
                         case Geometry:
-                            if (mAbstractGraphics.getType().equals("StraightLine")) {
-                                mDrawInfo = new StraightLineDrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
-                            }else if (mAbstractGraphics.getType().equals("Retangle")) {
-                                mDrawInfo = new RetangleDrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
-                            }else if (mAbstractGraphics.getType().equals("Circle")) {
-                                mDrawInfo = new CircleDrawInfo(new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
-                            }
+                            mDrawInfo = DrawInfoSimpleFactory.createConcreDrawInfoWithPen(mAbstractGraphics.getType(),new Pen(mPaintBoard.getPenSize(),mPaintBoard.getPenColor()));
                             break;
                     }
                     mDrawInfo.getmPointList().add(new Point(mStartPoint.x,mStartPoint.y));
@@ -479,8 +478,6 @@ public class PaintBoardView extends View {
                 if (mDrawInfo != null && mMode != Mode.Geometry){
                     mDrawInfo.getmPointList().add(new Point(mEndPoint.x,mEndPoint.y));
                 }
-
-
                 // 如果是画笔和橡皮擦模式，直接画到bitmap上
                 if (mMode != Mode.Geometry){
                     // 这里终点设为两点的中心点的目的在于使绘制的曲线更平滑，如果终点直接设置为x,y，效果和lineto是一样的,实际是折线效果
@@ -506,8 +503,6 @@ public class PaintBoardView extends View {
                     mDrawInfo.getmPointList().add(new Point(mEndPoint.x,mEndPoint.y));
                     saveDrawingPath(mDrawInfo);
                 }
-
-
                 // 结束书写
                 mDrawInfo = null;
                 mDrawing = false;
