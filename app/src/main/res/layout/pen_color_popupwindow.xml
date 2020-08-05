@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:background="@color/penColorBlack"
+        android:id="@+id/color_black"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:background="@color/penColorRed"
+        android:id="@+id/color_red"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:background="@color/penColorOrange"
+        android:id="@+id/color_orange"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:background="@color/penColorYellow"
+        android:id="@+id/color_yellow"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:background="@color/penColorGreen"
+        android:id="@+id/color_green"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_margin="5dp"
+        android:background="@color/penColorBlue"
+        android:id="@+id/color_blue"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_margin="5dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/penColorPurpos"
+        android:id="@+id/color_purpos"/>
+</LinearLayout>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <com.example.paintapp.PaintBoardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="14"
+        android:id="@+id/paint_board_view"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="5dp"
+                android:id="@+id/pen_color"/>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/pen"
+                android:scaleType="centerInside"
+                android:src="@drawable/pen"
+                android:background="@drawable/toolbar_item_background"
+                />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/lineThickness"
+                android:scaleType="centerInside"
+                android:src="@drawable/line"
+                android:background="@drawable/toolbar_item_background"/>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/erasor"
+                android:scaleType="centerInside"
+                android:src="@drawable/erasor"
+                android:background="@drawable/toolbar_item_background"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/geometry"
+                android:scaleType="centerInside"
+                android:src="@drawable/geometry"
+                android:background="@drawable/toolbar_item_background"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/undo"
+                android:scaleType="centerInside"
+                android:src="@drawable/undo"
+                android:background="@drawable/toolbar_item_background"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/redo"
+                android:scaleType="centerInside"
+                android:src="@drawable/redo"
+                android:background="@drawable/toolbar_item_background"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/clear"
+                android:scaleType="centerInside"
+                android:src="@drawable/clear"
+                android:background="@drawable/toolbar_item_background"/>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/add"
+                android:scaleType="centerInside"
+                android:src="@drawable/add"
+                android:background="@drawable/toolbar_item_background"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,36 @@
+package PaintKit;
+
+import android.graphics.Path;
+
+import java.util.ArrayList;
+
+public class PenDrawInfo extends AbstractDrawInfo {
+
+    public PenDrawInfo() {
+        super();
+        super.setType("PenDrawInfo");
+    }
+
+    public PenDrawInfo(AbstractPen pen) {
+        super(pen);
+        super.setType("PenDrawInfo");
+    }
+
+    /**
+     * 利用点重新绘制出path
+     * @param path 要绘制的path
+     */
+    @Override
+    public void rebuildPath(Path path) {
+        float startX = super.getmPointList().get(0).x;
+        float startY = super.getmPointList().get(0).y;
+
+        path.moveTo(startX,startY);
+        for(Point point: super.getmPointList()){
+            path.quadTo(startX, startY, (point.x + startX) / 2, (point.y + startY) / 2);
+            startX = point.x;
+            startY = point.y;
+        }
+    }
+
+}

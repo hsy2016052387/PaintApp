@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:gravity="center">
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:id="@+id/geometry_straight_line"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_straight_line"
+        android:background="@drawable/popupwindow_item_backgroud"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:id="@+id/geometry_retangle"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_retangle"
+        android:background="@drawable/popupwindow_item_backgroud"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:id="@+id/geometry_circle"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_circle"
+        android:background="@drawable/popupwindow_item_backgroud"/>
+
+</LinearLayout>
