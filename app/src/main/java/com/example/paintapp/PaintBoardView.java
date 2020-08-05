@@ -16,6 +16,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +35,11 @@ import PaintKit.Point;
 import PaintKit.RetangleDrawInfo;
 import PaintKit.StraightLineDrawInfo;
 
+
 import static android.content.ContentValues.TAG;
 
 
-public class PaintBoardView extends View {
+public class PaintBoardView extends ViewGroup {
     private PointF mStartPoint,mEndPoint;
     private Paint mPaint,mOldPaint;
     private Path mPath;

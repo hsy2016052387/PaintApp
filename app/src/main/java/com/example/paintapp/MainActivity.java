@@ -2,6 +2,7 @@ package com.example.paintapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,9 +14,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.MessageQueue;
+import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.format.Time;
@@ -24,6 +30,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private PenColorPopupWindow mPenColorPopupWindow;
     private SwitchPagePopupWindow mSwitchPagePopupWindow;
     private GeometrySelectPopupWindow mGeometrySelectPopupWindow;
+
+
 
     private PaintBoardView mPaintBoardView;
     private View mPenColorView;
@@ -70,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
 
         mPaintBoardView = (PaintBoardView)findViewById(R.id.paint_board_view);
